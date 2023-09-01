@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping("/save")
-    public User save( @RequestBody User user) {
+    public User save( @RequestBody @Valid User user) {
         log.info("Invoke save method with user = {}", user);
         users.put(user.getId(),user);
         return users.get(user.getId());
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/updateFilm/{filmId}")
-    public User updateFilm(@PathVariable Long userId, @RequestBody User updatedUser) {
+    public User updateFilm(@PathVariable Long userId, @RequestBody @Valid User updatedUser) {
         if (users.containsKey(userId)) {
             log.info("Invoke updateFilm method for film with id = {}", userId);
             users.remove(userId);

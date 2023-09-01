@@ -21,7 +21,7 @@ public class Film {
     @Positive
     private final long duration;
 
-    public Film(String name, String description, LocalDate releaseDate, long duration) {
+    public Film(String name, String description , LocalDate releaseDate, long duration) {
         this.id = ++idCounter;
         this.name = name;
         this.description = description;

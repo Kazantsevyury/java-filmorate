@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
     @PostMapping("/save")
-    public Film  save (  @RequestBody Film film){
+    public Film  save (  @RequestBody @Valid Film film){
         log.info("Invoke save method with film = {}", film);
         films.put(film.getId(),film);
         return film ;
@@ -36,7 +37,7 @@ public class FilmController {
     }
 
     @PutMapping("/updateFilm/{filmId}")
-    public Film updateFilm(@PathVariable Long filmId, @RequestBody Film updatedFilm) {
+    public Film updateFilm(@PathVariable Long filmId, @RequestBody @Valid Film updatedFilm) {
         if (films.containsKey(filmId)) {
             log.info("Invoke updateFilm method for film with id = {}", filmId);
             films.remove(filmId);

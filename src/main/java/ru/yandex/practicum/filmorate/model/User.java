@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.IdGenerator;
 
 import javax.validation.constraints.Email;
@@ -12,29 +15,39 @@ import java.time.LocalDate;
 @Data
 public class User {
     private static Long idCounter = 0L;
+    @NotBlank
+    private final String login;
+    private final String name;
+
     private final Long id;
     @Email
     @NotEmpty
     private final String email;
-    @NotBlank
-    private final String login;
-    private final String name;
+
     @Past
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private final LocalDate birthday;
 
 
-    public User(Long id, String email, String login, String name, LocalDate birthday) {
-        this.id = ++idCounter;;
-        this.email = email;
+    @JsonCreator
+    public User(@JsonProperty("login") String login,
+                @JsonProperty("name") String name,
+                @JsonProperty("email") String email,
+                @JsonProperty("birthday") LocalDate birthday) {
+        this.id = ++idCounter;
         this.login = login;
         this.name = name;
+        this.email = email;
         this.birthday = birthday;
     }
-    public User(String email, String login, LocalDate birthday) {
-        this.id =  ++idCounter;;
-        this.email = email;
+
+    public User(@JsonProperty("login") String login,
+                @JsonProperty("email") String email,
+                @JsonProperty("birthday") LocalDate birthday) {
+        this.id = ++idCounter;
         this.login = login;
-        this.name = login; // Используем логин как имя по умолчанию
+        this.name = login;
+        this.email = email;
         this.birthday = birthday;
     }
 }
