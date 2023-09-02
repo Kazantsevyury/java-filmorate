@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
-    @PostMapping("/save")
+    @PostMapping
     public User save( @RequestBody @Valid User user) {
         log.info("Invoke save method with user = {}", user);
         users.put(user.getId(),user);
@@ -24,13 +23,13 @@ public class UserController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public User get(@PathVariable long id){
         log.info("Invoke get method for film with id = {}", id);
         return users.get(id);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public List<User> getAllUsers() {
         log.info("Invoke getAllUsers method");
         List<User> allUsers = new ArrayList<>(users.values());
@@ -38,7 +37,7 @@ public class UserController {
         return allUsers;
     }
 
-    @PutMapping("/updateFilm/{filmId}")
+    @PutMapping
     public User updateFilm(@PathVariable Long userId, @RequestBody @Valid User updatedUser) {
         if (users.containsKey(userId)) {
             log.info("Invoke updateFilm method for film with id = {}", userId);
@@ -49,6 +48,4 @@ public class UserController {
             return null;
         }
     }
-
-
 }

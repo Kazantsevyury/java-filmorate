@@ -9,15 +9,18 @@ import java.time.LocalDate;
 @Data
 public class Film {
     private static Long idCounter = 0L;
-
     private final Long id;
+
     @NotBlank
     private final String name;
+
     @Size(max = 200)
     private final String description;
+
     @NotEmpty
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private final LocalDate releaseDate;
+
     @Positive
     private final long duration;
 
