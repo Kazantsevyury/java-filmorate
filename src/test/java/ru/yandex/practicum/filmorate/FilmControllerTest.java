@@ -36,8 +36,8 @@ public class FilmControllerTest {
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(validFilm)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-
     }
+
     @Test
     public void testEmptyName() throws Exception {
         Film filmWithEmptyName = new Film(
