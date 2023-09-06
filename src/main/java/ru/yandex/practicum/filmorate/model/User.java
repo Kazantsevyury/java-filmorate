@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
@@ -16,12 +13,13 @@ public class User {
     private static Long idCounter = 0L;
 
     @NotBlank
+    @Pattern(regexp = "^[^\\s]+$")
     private final String login;
     private final String name;
     private final Long id;
 
-    @Email
     @NotEmpty
+    @Email
     private final String email;
 
     @Past
