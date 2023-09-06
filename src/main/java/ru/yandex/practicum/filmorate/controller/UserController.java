@@ -19,11 +19,7 @@ public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
-    public User save(@RequestBody @Validated User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationException("Validation failed for user.");
-        }
-
+    public User save(@RequestBody @Validated User user) {
         log.info("Invoke save method with user = {}", user);
         users.put(user.getId(), user);
         return users.get(user.getId());
