@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
     }
+
     @Test
     public void testEmptyEmail() throws Exception {
         User user = new User(
