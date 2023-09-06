@@ -16,16 +16,15 @@ public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
-    public User save( @RequestBody @Valid User user) {
+    public User save(@RequestBody @Valid User user) {
         log.info("Invoke save method with user = {}", user);
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return users.get(user.getId());
-
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable long id){
-        log.info("Invoke get method for film with id = {}", id);
+    public User get(@PathVariable long id) {
+        log.info("Invoke get method for user with id = {}", id);
         return users.get(id);
     }
 
@@ -37,12 +36,12 @@ public class UserController {
         return allUsers;
     }
 
-    @PutMapping
+    @PutMapping("/{userId}")
     public User updateFilm(@PathVariable Long userId, @RequestBody @Valid User updatedUser) {
         if (users.containsKey(userId)) {
-            log.info("Invoke updateFilm method for film with id = {}", userId);
+            log.info("Invoke updateFilm method for user with id = {}", userId);
             users.remove(userId);
-            users.put(updatedUser.getId(),updatedUser);
+            users.put(updatedUser.getId(), updatedUser);
             return updatedUser;
         } else {
             return null;
