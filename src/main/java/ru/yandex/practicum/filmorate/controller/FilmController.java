@@ -14,15 +14,16 @@ import java.util.Map;
 @RequestMapping("/api/films")
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
+
     @PostMapping
-    public Film  save (  @RequestBody @Valid Film film){
+    public Film save(@RequestBody @Valid Film film) {
         log.info("Invoke save method with film = {}", film);
-        films.put(film.getId(),film);
-        return film ;
+        films.put(film.getId(), film);
+        return film;
     }
 
     @GetMapping
-    public Film get(@PathVariable long id){
+    public Film get(@PathVariable long id) {
         log.info("Invoke get method for film with id = {}", id);
         return films.get(id);
     }
@@ -40,7 +41,7 @@ public class FilmController {
         if (films.containsKey(filmId)) {
             log.info("Invoke updateFilm method for film with id = {}", filmId);
             films.remove(filmId);
-            films.put(updatedFilm.getId(),updatedFilm);
+            films.put(updatedFilm.getId(), updatedFilm);
             return updatedFilm;
         } else {
             return null;
