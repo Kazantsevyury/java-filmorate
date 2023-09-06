@@ -32,7 +32,7 @@ public class UserController {
     public List<User> getAllUsers() {
         log.info("Invoke getAllUsers method");
         List<User> allUsers = new ArrayList<>(users.values());
-        log.info("Returning {} users: {}", allUsers.size(), allUsers);
+        log.info("Returning {} users:{}", allUsers.size(), allUsers);
         return allUsers;
     }
 
