@@ -54,7 +54,6 @@ class FilmControllerTest extends FilmController {
         });
         Assertions.assertEquals("Conditions for adding a film are not met", exception.getMessage());
     }
-    
     @Test
     void shouldNotAddFilmWithZeroDuration() {
         Film film = new Film(3, "The Dark Knight", "Why so serious?",
