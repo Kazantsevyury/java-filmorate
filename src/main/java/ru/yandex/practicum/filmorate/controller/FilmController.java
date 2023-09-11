@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/films")
+@RequestMapping("/films")
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -23,13 +23,13 @@ public class FilmController {
         return film;
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public Film get(@PathVariable long id) {
         log.info("Invoke get method for film with id = {}", id);
         return films.get(id);
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     public List<Film> getAllFilms() {
         log.info("Invoke getAllFilms method");
         List<Film> allFilms = new ArrayList<>(films.values());
@@ -37,11 +37,11 @@ public class FilmController {
         return allFilms;
     }
 
-    @PutMapping("/updateFilm/{filmId}")
-    public Film updateFilm(@PathVariable Long filmId, @RequestBody @Valid Film updatedFilm) {
-        if (films.containsKey(filmId)) {
-            log.info("Invoke updateFilm method for film with id = {}", filmId);
-            films.remove(filmId);
+    @PutMapping
+    public Film updateFilm(@RequestBody @Valid Film updatedFilm) {
+        if (films.containsKey(updatedFilm.getId())) {
+            log.info("Invoke updateFilm method for film with id = {}", updatedFilm.getId());
+            films.remove(updatedFilm.getId());
             films.put(updatedFilm.getId(), updatedFilm);
             return updatedFilm;
         } else {

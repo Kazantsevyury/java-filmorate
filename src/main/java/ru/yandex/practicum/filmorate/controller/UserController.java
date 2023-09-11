@@ -11,16 +11,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.util.StringUtils;
+
 
 @Slf4j
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
     public User save(@RequestBody @Validated User user) {
         log.info("Invoke save method with user = {}", user);
+        if (!StringUtils.hasText(user.getName())) {
+            user.setName(user.getLogin());
+        }
         users.put(user.getId(), user);
         return users.get(user.getId());
     }
@@ -35,7 +40,7 @@ public class UserController {
         return user;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     public List<User> getAllUsers() {
         log.info("Invoke getAllUsers method");
         List<User> allUsers = new ArrayList<>(users.values());
@@ -43,19 +48,19 @@ public class UserController {
         return allUsers;
     }
 
-    @PutMapping("/{userId}")
-    public User updateFilm(@PathVariable Long userId, @RequestBody @Validated User updatedUser, BindingResult bindingResult) {
+    @PutMapping
+    public User updateFilm( @RequestBody @Validated User updatedUser, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException("Validation failed for updated user.");
         }
 
-        if (users.containsKey(userId)) {
-            log.info("Invoke updateFilm method for user with id = {}", userId);
-            users.remove(userId);
+        if (users.containsKey(updatedUser.getId())) {
+            log.info("Invoke updateFilm method for user with id = {}", updatedUser.getId());
+            users.remove(updatedUser.getId());
             users.put(updatedUser.getId(), updatedUser);
             return updatedUser;
         } else {
-            throw new UserNotFoundException("User with id " + userId + " not found.");
+            throw new UserNotFoundException("User with id " + updatedUser.getId() + " not found.");
         }
     }
 }

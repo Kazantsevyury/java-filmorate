@@ -15,7 +15,7 @@ public class User {
     @NotBlank
     @Pattern(regexp = "^[^\\s]+$")
     private final String login;
-    private final String name;
+    private String name;
     private final Long id;
 
     @NotEmpty
@@ -26,6 +26,9 @@ public class User {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private final LocalDate birthday;
 
+    public void setName(String name) {
+        this.name = name;
+    }
     @JsonCreator
     public User(@JsonProperty("login") String login,
                 @JsonProperty("name") String name,
