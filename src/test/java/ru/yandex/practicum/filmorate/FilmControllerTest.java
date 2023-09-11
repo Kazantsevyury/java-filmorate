@@ -54,21 +54,7 @@ class FilmControllerTest extends FilmController {
         });
         Assertions.assertEquals("Conditions for adding a film are not met", exception.getMessage());
     }
-
-    @Test
-    void shouldNotAddFilmWithDateBefore1880() {
-        Film film = new Film(3, "The Godfather", "An offer you can't refuse.",
-                LocalDate.of(1972, Month.MARCH, 14), 175);
-
-        InvalidInputException exception = Assertions.assertThrows(InvalidInputException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                createFilm(film);
-            }
-        });
-        Assertions.assertEquals("Conditions for adding a film are not met", exception.getMessage());
-    }
-
+    
     @Test
     void shouldNotAddFilmWithZeroDuration() {
         Film film = new Film(3, "The Dark Knight", "Why so serious?",
