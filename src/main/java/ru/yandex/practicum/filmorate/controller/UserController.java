@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateFilm( @RequestBody @Validated User updatedUser, BindingResult bindingResult) {
+    public User updateFilm(@RequestBody @Validated User updatedUser, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException("Validation failed for updated user.");
         }
