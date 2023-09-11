@@ -29,7 +29,7 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     @JsonCreator
     public User(@JsonProperty("login") String login,
                 @JsonProperty("name") String name,
