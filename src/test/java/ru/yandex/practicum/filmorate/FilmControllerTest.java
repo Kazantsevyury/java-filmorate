@@ -48,13 +48,13 @@ class FilmControllerTest extends FilmController {
         InvalidInputException exception = Assertions.assertThrows(InvalidInputException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
-                film.setDescription("A description that exceeds 200 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget odio vitae eros commodo viverra. Nulla facilisi. Donec vitae libero eu metus volutpat laoreet eget sed libero. Nullam ut eleifend purus. ");
+                film.setDescription("A description that exceeds 200 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget odio vitae eros commodo viverra. Nulla facilisi. Donec vitae libero eu metus volutpat laoreet eget sed libero. Nullam ut eleifend purus.");
                 createFilm(film);
             }
         });
         Assertions.assertEquals("Conditions for adding a film are not met", exception.getMessage());
     }
-    
+
     @Test
     void shouldNotAddFilmWithZeroDuration() {
         Film film = new Film(3, "The Dark Knight", "Why so serious?",
