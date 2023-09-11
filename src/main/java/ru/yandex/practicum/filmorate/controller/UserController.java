@@ -20,7 +20,7 @@ public class UserController {
     int idCounter = 1;
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User create(@RequestBody User user) {
         log.info("Created POST request");
         String email = user.getEmail();
         String login = user.getLogin();
