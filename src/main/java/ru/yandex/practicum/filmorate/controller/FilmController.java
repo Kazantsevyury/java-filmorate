@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.coyote.http11.Constants.a;
-
 @RestController
 @Slf4j
 @RequestMapping("/films")
