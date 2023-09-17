@@ -56,6 +56,7 @@ public class FilmController {
         if (!filmService.existenceOfTheFilmIdInStorage(id)) {
             throw new ObjectAlreadyExistException("A film with this ID is not present");
         }
+        
         else {
             if (filmService.conditionsCheck(film)) {
                 if (filmService.existenceOfTheFilmIdInStorage(id)) {
