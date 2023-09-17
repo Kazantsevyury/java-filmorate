@@ -1,78 +1,77 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
-public class UserController {
+@RequiredArgsConstructor
 
-    private final Map<Integer, User> users = new HashMap<>();
-    int idCounter = 1;
+public class UserController {
+    private final UserService userService;
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        log.info("Created POST request");
-        String email = user.getEmail();
-        String login = user.getLogin();
-        String name = user.getName();
-        LocalDate birthday = user.getBirthday();
-        if (users.containsKey(user.getId())) {
-            throw new ObjectAlreadyExistException("A user with this ID already exists");
-        }
-        if (!email.isBlank() && email.contains("@") && !login.isBlank() &&
-                !login.contains(" ") && birthday.isBefore(LocalDate.now())) {
-            if (name == null) {
-                user.setName(login);
-            }
-            user.setId(getNextId());
-            users.put(user.getId(), user);
-        } else {
-            throw new InvalidInputException("Conditions for adding a user are not met");
-        }
-        return user;
+    public User saveUser(@RequestBody User user) {
+        log.info("Created POST request. saveUser");
+        return userService.saveUser(user);
     }
 
-    public int getNextId() {
-        return idCounter++;
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Created PUT request. addFriend");
+        return userService.addFriend(userId, friendId);
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) {
-        log.info("Created PUT request");
-        String email = user.getEmail();
-        String login = user.getLogin();
-        LocalDate birthday = user.getBirthday();
-        if (!email.isBlank() && email.contains("@") && !login.isBlank() &&
-                !login.contains(" ") && birthday.isBefore(LocalDate.now())) {
-            if (user.getName().isBlank()) {
-                user.setName(login);
-            }
-            if (users.containsKey(user.getId())) {
-                users.remove(user.getId());
-                users.put(user.getId(), user);
-            } else {
-                throw new InvalidInputException("Conditions for updating a user are not met");
-            }
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public void deleteFriends(@PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Created Delete request. deleteFriends");
+        userService.deleteFriend(userId, friendId);
+    }
 
-        } else {
-            throw new InvalidInputException("Conditions for updating a user are not met");
-        }
-        return user;
+    @GetMapping("/{id}/friends")
+    public Set<Long> getFriendsSet(@PathVariable Long id) {
+        log.info("Created Get request. getFriendsSet");
+        return userService.getFriendsSet(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<Long> getListOfFriendsSharedWithAnotherUser(@PathVariable Long id, @PathVariable Long otherId) {
+        log.info("Created Get request. getListOfFriendsSharedWithAnotherUser");
+        return userService.getListOfFriendsSharedWithAnotherUser(id, otherId);
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+        log.info("Created PUT request. updateUser");
+        user.setId(id);
+        return userService.updateUser(user);
     }
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        log.info("Created GET request");
-        return users.values();
+        log.info("Created GET request. getAllUsers");
+        return userService.getAllUsers();
+    }
+
+    @PutMapping("/{userId}/addLikesToUser/{filmId}")
+     ResponseEntity<Void> addLikesToUser(@PathVariable Long userId, @PathVariable Long filmId) {
+        log.info("Created PUT request. addLikesToUser");
+
+        try {
+            userService.addLikesToUser(userId, filmId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error adding likes to user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
