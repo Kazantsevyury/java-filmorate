@@ -27,5 +27,4 @@ public interface FilmStorage {
     void updateTop();
 
     List<Film> getTopFilms(int count);
-    
 }
