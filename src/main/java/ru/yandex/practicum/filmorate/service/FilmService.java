@@ -20,9 +20,9 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final LocalDate birthOfCinema = LocalDate.of(1895, Month.DECEMBER, 28);
 
-    public Film saveFilm (Film film){
+    public Film saveFilm (Film film) {
         Long id = film.getId();
-        if (id == null){
+        if (id == null) {
             film.setId(IdGenerator.getNewFilmId());
         }
 
