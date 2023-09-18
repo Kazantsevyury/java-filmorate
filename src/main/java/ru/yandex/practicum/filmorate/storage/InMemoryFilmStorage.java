@@ -4,14 +4,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 @Component
-public class InMemoryFilmStorage implements FilmStorage  {
+public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
     private final TreeMap<Long, Film> filmsTop = new TreeMap<>(
@@ -20,14 +18,14 @@ public class InMemoryFilmStorage implements FilmStorage  {
 
     @Override
     public Film save(Film film) {
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         updateTop();
         return films.get(film.getId());
     }
 
     @Override
     public Film getById(Long id) {
-        return films.get(id) ;
+        return films.get(id);
     }
 
     @Override
@@ -42,16 +40,16 @@ public class InMemoryFilmStorage implements FilmStorage  {
     }
 
     @Override
-    public boolean existenceOfTheFilmIdInStorage(Long id){
+    public boolean existenceOfTheFilmIdInStorage(Long id) {
         return films.containsKey(id);
-    };
+    }
 
     @Override
-    public void updateById (Long id, Film film){
+    public void updateById(Long id, Film film) {
         films.remove(id);
         films.put(film.getId(), film);
         updateTop();
-    };
+    }
 
     @Override
     public Collection<Film> getMostLikedFilms(int limit) {
@@ -62,17 +60,17 @@ public class InMemoryFilmStorage implements FilmStorage  {
     }
 
     @Override
-    public Film addLike (Long userId, Long filmId){
+    public Film addLike(Long userId, Long filmId) {
         Film film = films.get(filmId);
-        film.setId(film.getId()+1);
+        film.setId(film.getId() + 1);
         films.remove(filmId);
-        films.put(film.getId(),film);
+        films.put(film.getId(), film);
         updateTop();
         return film;
-    } ;
+    }
 
     @Override
-    public Collection<Film> getPopularFilms (int count){
+    public Collection<Film> getPopularFilms(int count) {
         return getTopFilms(count);
     }
 
