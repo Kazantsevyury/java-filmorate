@@ -2,18 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +17,12 @@ import java.util.Set;
 public class UserService {
     private final UserStorage userStorage;
 
-    public User saveUser (User user){
+    public User saveUser(User user) {
 
         Long id = user.getId();
-        if (id == null){
+        if (id == null) {
             user.setId(IdGenerator.getUserId());
         }
-
 
         if (conditionsCheck(user)) {
             idCheck(user);
@@ -37,11 +31,12 @@ public class UserService {
             throw new InvalidInputException("Conditions for adding a user are not met");
         }
     }
-    private User gerUserById (long id){
+
+    private User gerUserById(long id) {
         return userStorage.getById(id);
     }
 
-    public void deleteUserById (long id){
+    public void deleteUserById(long id) {
         userStorage.deleteById(id);
     }
 
@@ -51,14 +46,14 @@ public class UserService {
         }
     }
 
-    public boolean conditionsCheck (User user){
+    public boolean conditionsCheck(User user) {
         final Long id = user.getId();
         String email = user.getEmail();
         String login = user.getLogin();
         String name = user.getName();
         LocalDate birthday = user.getBirthday();
 
-        return ((!email.isBlank() && email.contains("@") && !login.isBlank() &&  !login.contains(" ") && birthday.isBefore(LocalDate.now()))) ;
+        return ((!email.isBlank() && email.contains("@") && !login.isBlank() && !login.contains(" ") && birthday.isBefore(LocalDate.now())));
 
     }
 
@@ -84,12 +79,12 @@ public class UserService {
     }
 
     public User addFriend(Long userId, Long friendId) {
-        return userStorage.addFriend( userId, friendId);
+        return userStorage.addFriend(userId, friendId);
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-        userStorage.deleteFriend(userId,friendId);
-        userStorage.deleteFriend(friendId,userId);
+        userStorage.deleteFriend(userId, friendId);
+        userStorage.deleteFriend(friendId, userId);
     }
 
     public Set<Long> getCommonFriends(Long userId1, Long userId2) {
@@ -105,21 +100,21 @@ public class UserService {
         }
     }
 
-    public void addLikesToUser(Long userId,Long filmId){
-        userStorage.addLike(userId,filmId);
-    };
+    public void addLikesToUser(Long userId, Long filmId) {
+        userStorage.addLike(userId, filmId);
+    }
 
-    public void removeLikeFromUser(Long userId,Long filmId){
-        userStorage.removeLikeFromUser(userId,filmId);
-    };
+    public void removeLikeFromUser(Long userId, Long filmId) {
+        userStorage.removeLikeFromUser(userId, filmId);
+    }
 
-    public Set<Long> getFriendsSet( Long id) {
+    public Set<Long> getFriendsSet(Long id) {
         return userStorage.getFriendsSet(id);
     }
 
-    public Set<Long> getListOfFriendsSharedWithAnotherUser(Long id, Long otherId){
+    public Set<Long> getListOfFriendsSharedWithAnotherUser(Long id, Long otherId) {
         Set<Long> friendsSet1 = userStorage.getFriendsSet(id);
-        Set<Long> friendsSet2 =  userStorage.getFriendsSet(otherId);
+        Set<Long> friendsSet2 = userStorage.getFriendsSet(otherId);
 
         Set<Long> sharedFriends = new HashSet<>(friendsSet1);
 
