@@ -14,7 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User save(User user) {
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return users.get(user.getId());
     }
 
@@ -34,18 +34,18 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getAllUsers(){
+    public Collection<User> getAllUsers() {
         return users.values();
-    };
+    }
 
     @Override
-    public void updateById (Long id, User user){
+    public void updateById(Long id, User user) {
         users.remove(id);
-        users.put(user.getId(),user);
-    };
+        users.put(user.getId(), user);
+    }
 
     @Override
-    public User addFriend(Long userId, Long friendId){
+    public User addFriend(Long userId, Long friendId) {
 
         User user = users.get(userId);
         User friend = users.get(friendId);
@@ -55,8 +55,7 @@ public class InMemoryUserStorage implements UserStorage {
                 Set<Long> friends = new HashSet<>();
                 friends.add(friendId);
                 user.setFriends(friends);
-            }
-            else {
+            } else {
                 Set<Long> friends = user.getFriends();
                 friends.add(friendId);
                 user.setFriends(friends);
@@ -66,8 +65,7 @@ public class InMemoryUserStorage implements UserStorage {
                 Set<Long> friends = new HashSet<>();
                 friends.add(userId);
                 friend.setFriends(friends);
-            }
-            else {
+            } else {
                 Set<Long> friends = friend.getFriends();
                 friends.add(userId);
                 friend.setFriends(friends);
@@ -77,14 +75,13 @@ public class InMemoryUserStorage implements UserStorage {
             updateById(userId, user);
             return user;
 
-
         } else {
             throw new InvalidInputException("User or friend not found.");
         }
     }
 
     @Override
-    public void deleteFriend(Long userId, Long friendId){
+    public void deleteFriend(Long userId, Long friendId) {
         User user = users.get(userId);
 
         Set<Long> userFriends = user.getFriends();
@@ -93,34 +90,33 @@ public class InMemoryUserStorage implements UserStorage {
             user.setFriends(userFriends);
         }
         updateById(userId, user);
-    };
+    }
 
     @Override
-    public void addLike (Long userId, Long filmId) {
+    public void addLike(Long userId, Long filmId) {
         User user = users.get(userId);
-        if (user.getLikes() == null){
+        if (user.getLikes() == null) {
             user.setLikes(Collections.singleton(filmId));
-        }
-        else {
+        } else {
             Set<Long> likes = new HashSet<>(user.getLikes());
             likes.add(filmId);
             user.setLikes(likes);
         }
-        updateById(userId,user);
-    };
+        updateById(userId, user);
+    }
 
     @Override
-    public void removeLikeFromUser (Long userId, Long filmId){
+    public void removeLikeFromUser(Long userId, Long filmId) {
         User user = users.get(userId);
         Set<Long> likes = new HashSet<>(user.getLikes());
         likes.remove(filmId);
         user.setLikes(likes);
         users.remove(userId);
-        users.put(userId,user);
-    };
+        users.put(userId, user);
+    }
 
     @Override
-        public  Set<Long> getFriendsSet (Long userId){
+    public Set<Long> getFriendsSet(Long userId) {
         return users.get(userId).getFriends();
-    };
+    }
 }
