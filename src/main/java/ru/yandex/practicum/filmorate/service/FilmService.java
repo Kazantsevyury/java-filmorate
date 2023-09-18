@@ -20,7 +20,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final LocalDate birthOfCinema = LocalDate.of(1895, Month.DECEMBER, 28);
 
-    public Film saveFilm (Film film) {
+    public Film saveFilm(Film film) {
         Long id = film.getId();
         if (id == null) {
             film.setId(IdGenerator.getNewFilmId());
@@ -32,18 +32,21 @@ public class FilmService {
         } else {
             throw new InvalidInputException("Conditions for adding a film are not met");
         }
-
     }
-    private Film gerFilmById (long id){
+
+    private Film getFilmById(long id) {
         return filmStorage.getById(id);
     }
-    public void deleteFilmById (long id){
+
+    public void deleteFilmById(long id) {
         filmStorage.deleteById(id);
     }
-    public boolean existenceOfTheFilmIdInStorage(Long id){
-       return filmStorage.existenceOfTheFilmIdInStorage(id);
+
+    public boolean existenceOfTheFilmIdInStorage(Long id) {
+        return filmStorage.existenceOfTheFilmIdInStorage(id);
     }
-    public Collection<Film> getAllFilms(){
+
+    public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }
 
@@ -54,29 +57,29 @@ public class FilmService {
     }
 
     public boolean conditionsCheck(Film film) {
-    boolean isNameNotBlank = !film.getName().isBlank();
-    boolean isDescriptionValid = film.getDescription().length() <= 200;
-    boolean isReleaseDateValid = film.getReleaseDate().isAfter(birthOfCinema);
-    boolean isDurationValid = film.getDuration() > 0;
+        boolean isNameNotBlank = !film.getName().isBlank();
+        boolean isDescriptionValid = film.getDescription().length() <= 200;
+        boolean isReleaseDateValid = film.getReleaseDate().isAfter(birthOfCinema);
+        boolean isDurationValid = film.getDuration() > 0;
 
-    if (!isNameNotBlank) {
-        log.error("Film name is blank or null");
+        if (!isNameNotBlank) {
+            log.error("Film name is blank or null");
+        }
+
+        if (!isDescriptionValid) {
+            log.error("Film description is too long (more than 200 characters)");
+        }
+
+        if (!isReleaseDateValid) {
+            log.error("Film release date is not after the birth of cinema");
+        }
+
+        if (!isDurationValid) {
+            log.error("Film duration is not greater than 0");
+        }
+
+        return isNameNotBlank && isDescriptionValid && isReleaseDateValid && isDurationValid;
     }
-
-    if (!isDescriptionValid) {
-        log.error("Film description is too long (more than 200 characters)");
-    }
-
-    if (!isReleaseDateValid) {
-        log.error("Film release date is not after the birth of cinema");
-    }
-
-    if (!isDurationValid) {
-        log.error("Film duration is not greater than 0");
-    }
-
-    return isNameNotBlank && isDescriptionValid && isReleaseDateValid && isDurationValid;
-}
 
     public void addLikeToFilm(long filmId) {
         Film film = filmStorage.getById(filmId);
@@ -84,7 +87,6 @@ public class FilmService {
         if (film != null) {
             film.setLikes(film.getLikes() + 1);
             filmStorage.updateById(filmId, film);
-
         } else {
             throw new InvalidInputException("Film not found");
         }
@@ -100,8 +102,7 @@ public class FilmService {
         }
     }
 
-    public Collection<Film> getPopularFilms(int count){
+    public Collection<Film> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count);
     }
-
 }
