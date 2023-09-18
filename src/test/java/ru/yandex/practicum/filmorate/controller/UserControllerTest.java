@@ -190,7 +190,7 @@ public class UserControllerTest {
     public void testAddFriendWhenCalledWithValidIdsThenReturnsUser() {
         Long userId = 1L;
         Long friendId = 2L;
-        User dummyUser = new User(1l, "s@a.et", "log", "name", LocalDate.now());
+        User dummyUser = new User(1L, "s@a.et", "log", "name", LocalDate.now());
         when(userService.addFriend(userId, friendId)).thenReturn(dummyUser);
         User result = userController.addFriend(userId, friendId);
         assertEquals(dummyUser, result);
