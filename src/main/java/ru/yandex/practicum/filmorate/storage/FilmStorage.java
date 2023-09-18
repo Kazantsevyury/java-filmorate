@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FilmStorage {
     Film save(Film film);
-    
+
     Film getById(Long id);
 
     void deleteById(Long id);
@@ -27,4 +27,5 @@ public interface FilmStorage {
     void updateTop();
 
     List<Film> getTopFilms(int count);
+    
 }
