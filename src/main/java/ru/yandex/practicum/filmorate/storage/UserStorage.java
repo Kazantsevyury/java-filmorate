@@ -25,6 +25,7 @@ public interface UserStorage {
     void addLike(Long userId, Long filmId);
 
     void removeLikeFromUser(Long userId, Long filmId);
-    
+
     Set<Long> getFriendsSet(Long userId);
+
 }
