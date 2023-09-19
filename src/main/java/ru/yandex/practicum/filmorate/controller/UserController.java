@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -89,8 +87,9 @@ public class UserController {
             throw new UserNotFoundException(String.format("User with %s not found", userId));
         }
     }
+
     @DeleteMapping("/{userId}/deleteLikeFromFilm/{filmId}")
-    ResponseEntity<Void> DeleteLikesFromUser(@PathVariable Long userId, @PathVariable Long filmId) {
+    ResponseEntity<Void> deleteLikesFromUser(@PathVariable Long userId, @PathVariable Long filmId) {
         log.info("Created Delete request. DeleteLikesFromUser");
         if (userService.existenceOfTheUserIdInStorage(userId)) {
             userService.deleteLikeFromUser(filmId, userId);
