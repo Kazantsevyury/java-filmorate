@@ -19,7 +19,6 @@ import java.util.Collection;
 public class FilmController {
 
     private final FilmService filmService;
-
     private final RestTemplate restTemplate;
 
     @GetMapping
@@ -43,7 +42,6 @@ public class FilmController {
         } else {
             throw new InvalidInputException("Conditions for adding a film are not met");
         }
-
     }
 
     @PutMapping
@@ -68,17 +66,16 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void likeFilm(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Created Put request.likeFilm");
+        log.info("Created PUT request. likeFilm");
         filmService.addLikeToFilm(id);
 
         String url = "http://localhost:8080/users/{userId}/addLikesToUser/{filmId}";
         restTemplate.put(url, null, userId, id);
-
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeFilm(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Created Delete request. deleteLikeFilm");
+        log.info("Created DELETE request. deleteLikeFilm");
 
         filmService.removeLikeFromFilm(id);
 
@@ -96,13 +93,12 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id){
+    public Film getFilmById(@PathVariable Long id) {
         log.info("Created GET request. getFilmById");
-        if (filmService.existenceOfTheFilmIdInStorage(id)){
+        if (filmService.existenceOfTheFilmIdInStorage(id)) {
             return filmService.getFilmById(id);
-        }else{
-            throw new FilmNotFoundException("Film not found for ID:"+ id);
+        } else {
+            throw new FilmNotFoundException("Film not found for ID:" + id);
         }
     }
-
 }
