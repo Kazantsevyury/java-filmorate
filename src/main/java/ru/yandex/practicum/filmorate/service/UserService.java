@@ -1,8 +1,15 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import java.util.logging.Logger;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -11,25 +18,57 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserStorage userStorage;
 
     public User saveUser(User user) {
-
         Long id = user.getId();
         if (id == null) {
-            user.setId(IdGenerator.getUserId());
+            user.setId(IdGenerator.generateSimpleUserId());
+            log.info("User ID generated for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
         }
-
         if (conditionsCheck(user)) {
-            idCheck(user);
-            return userStorage.save(user);
+            User savedUser = userStorage.save(user);
+            log.info("User with ID '{}' updated successfully", savedUser.getId());
+            return savedUser;
         } else {
+            log.error("Failed to save user due to invalid input: {}", user);
             throw new InvalidInputException("Conditions for adding a user are not met");
         }
+
+
+    }
+
+    public User updateUser(User user) {
+        userStorage.deleteById(user.getId());
+       return  userStorage.save(user);
+
+
+        /*
+        if (user.getId() == null) {
+            log.error("Failed to update user: User ID is missing");
+            throw new UserNotFoundException("User ID is missing");
+        } else {
+            if (userStorage.existenceOfTheUserIdInStorage(user.getId())) {
+                if (conditionsCheck(user)) {
+                    userStorage.deleteById(user.getId());
+                    User updatedUser = userStorage.save(user);
+                    log.info("User with ID '{}' updated successfully", updatedUser.getId());
+                    return updatedUser;
+                } else {
+                    log.error("Failed to update user due to validation issues: {}", user);
+                    throw new ValidationException("Validation failed for user update");
+                }
+            } else {
+                log.error("Failed to update user: User with ID '{}' not found", user.getId());
+                throw new UserNotFoundException("User not found for ID: " + user.getId());
+            }
+        }
+        */
     }
 
     private User gerUserById(long id) {
@@ -42,36 +81,44 @@ public class UserService {
 
     public void idCheck(User user) {
         if (user.getId() == null) {
-            user.setId(IdGenerator.getUserId());
+            user.setId(IdGenerator.generateSimpleUserId());
         }
     }
 
     public boolean conditionsCheck(User user) {
-        final Long id = user.getId();
+        Long id = user.getId();
         String email = user.getEmail();
         String login = user.getLogin();
         String name = user.getName();
         LocalDate birthday = user.getBirthday();
 
-        return ((!email.isBlank() && email.contains("@") && !login.isBlank() && !login.contains(" ") && birthday.isBefore(LocalDate.now())));
+        if (!email.isBlank()) {
+            log.info("Email is not blank.");
 
-    }
+            if (email.contains("@")) {
+                log.info("Email contains '@'.");
 
-    public User updateUser(User user) {
-        Long id = user.getId();
-        String email = user.getEmail();
-        String login = user.getLogin();
-        LocalDate birthday = user.getBirthday();
-        if (conditionsCheck(user)) {
-            if (userStorage.existenceOfTheUserIdInStorage(id)) {
-                userStorage.deleteById(id);
+                if (!login.isBlank() && !login.contains(" ")) {
+                    log.info("Login is not blank and does not contain spaces.");
+
+                    if (birthday.isBefore(LocalDate.now())) {
+                        log.info("Birthday is before current date.");
+
+                        return true;
+                    } else {
+                        log.info("Birthday is not before current date.");
+                    }
+                } else {
+                    log.info("Login is blank or contains spaces.");
+                }
             } else {
-                throw new InvalidInputException("Conditions for updating a user are not met");
+                log.info("Email does not contain '@'.");
             }
         } else {
-            throw new InvalidInputException("Conditions for updating a user are not met");
+            log.info("Email is blank.");
         }
-        return userStorage.save(user);
+        return false;
+
     }
 
     public Collection<User> getAllUsers() {
@@ -104,8 +151,19 @@ public class UserService {
         userStorage.addLike(userId, filmId);
     }
 
-    public void removeLikeFromUser(Long userId, Long filmId) {
-        userStorage.removeLikeFromUser(userId, filmId);
+    public void deleteLikeFromUser(Long filmId, Long userID) {
+        if (existenceOfTheUserIdInStorage(userID)) {
+            User user = userStorage.getById(userID);
+            Set<Long> likes = user.getLikes();
+
+            if (!likes.isEmpty()) {
+                likes.remove(filmId);
+                user.setLikes(likes);
+                userStorage.save(user);
+            } else {
+                throw new InvalidInputException("The user has not yet put a single like to the movies.");
+            }
+        }
     }
 
     public Set<Long> getFriendsSet(Long id) {
@@ -121,5 +179,8 @@ public class UserService {
         sharedFriends.retainAll(friendsSet2);
 
         return sharedFriends;
+    }
+    public boolean existenceOfTheUserIdInStorage(Long id) {
+        return userStorage.existenceOfTheUserIdInStorage(id);
     }
 }

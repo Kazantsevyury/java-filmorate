@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.InvalidInputException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -15,7 +19,6 @@ import java.util.Set;
 @RequestMapping("/users")
 @Slf4j
 @RequiredArgsConstructor
-
 public class UserController {
     private final UserService userService;
 
@@ -23,6 +26,26 @@ public class UserController {
     public User saveUser(@RequestBody User user) {
         log.info("Created POST request. saveUser");
         return userService.saveUser(user);
+    }
+
+    @PutMapping
+    public User updateUser(@RequestBody User user) {
+        log.info("Created PUT request. updateUser");
+
+        final Long id = user.getId();
+
+        if (!userService.existenceOfTheUserIdInStorage(id)) {
+            throw new ObjectAlreadyExistException("A User with this ID is not present");
+        } else {
+            if (userService.conditionsCheck(user)) {
+                if (userService.existenceOfTheUserIdInStorage(id)) {
+                    userService.deleteUserById(id);
+                }
+                return userService.saveUser(user);
+            } else {
+                throw new InvalidInputException("Conditions for adding a user are not met");
+            }
+        }
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
@@ -49,13 +72,6 @@ public class UserController {
         return userService.getListOfFriendsSharedWithAnotherUser(id, otherId);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        log.info("Created PUT request. updateUser");
-        user.setId(id);
-        return userService.updateUser(user);
-    }
-
     @GetMapping
     public Collection<User> getAllUsers() {
         log.info("Created GET request. getAllUsers");
@@ -63,15 +79,26 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/addLikesToUser/{filmId}")
-     ResponseEntity<Void> addLikesToUser(@PathVariable Long userId, @PathVariable Long filmId) {
+    ResponseEntity<Void> addLikesToUser(@PathVariable Long userId, @PathVariable Long filmId) {
         log.info("Created PUT request. addLikesToUser");
-
-        try {
+        if (userService.existenceOfTheUserIdInStorage(userId)) {
             userService.addLikesToUser(userId, filmId);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Error adding likes to user: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } else {
+            log.error("Error adding likes to user with ID %s : ", userId);
+            throw new UserNotFoundException(String.format("User with %s not found", userId));
         }
     }
+    @DeleteMapping("/{userId}/deleteLikeFromFilm/{filmId}")
+    ResponseEntity<Void> DeleteLikesFromUser(@PathVariable Long userId, @PathVariable Long filmId) {
+        log.info("Created Delete request. DeleteLikesFromUser");
+        if (userService.existenceOfTheUserIdInStorage(userId)) {
+            userService.deleteLikeFromUser(filmId, userId);
+            return ResponseEntity.ok().build();
+        } else {
+            log.error("Error delete likes from user with ID %s : ", userId);
+            throw new UserNotFoundException(String.format("User with %s not found", userId));
+        }
+    }
+
 }

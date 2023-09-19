@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
 @Repository
-@Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
@@ -95,13 +95,11 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void addLike(Long userId, Long filmId) {
         User user = users.get(userId);
-        if (user.getLikes() == null) {
-            user.setLikes(Collections.singleton(filmId));
-        } else {
-            Set<Long> likes = new HashSet<>(user.getLikes());
-            likes.add(filmId);
-            user.setLikes(likes);
-        }
+
+        Set<Long> likes = new HashSet<>(user.getLikes());
+        likes.add(filmId);
+        user.setLikes(likes);
+
         updateById(userId, user);
     }
 

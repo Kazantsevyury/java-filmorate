@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -20,7 +20,6 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    @Autowired
     private final RestTemplate restTemplate;
 
     @GetMapping
@@ -80,8 +79,14 @@ public class FilmController {
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeFilm(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Created Delete request. deleteLikeFilm");
-        filmService.addLikeToFilm(id);
 
+        filmService.removeLikeFromFilm(id);
+
+        // Создаем URL с параметрами пути
+        String url = String.format("http://localhost:8080/users/{userId}/deleteLikeFromUser/{filmId}", userId, id);
+
+        // Используем RestTemplate для отправки DELETE-запроса
+        restTemplate.delete(url);
     }
 
     @GetMapping("/popular")
@@ -89,4 +94,15 @@ public class FilmController {
         log.info("Created GET request. getPopularFilms");
         return filmService.getPopularFilms(count);
     }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id){
+        log.info("Created GET request. getFilmById");
+        if (filmService.existenceOfTheFilmIdInStorage(id)){
+            return filmService.getFilmById(id);
+        }else{
+            throw new FilmNotFoundException("Film not found for ID:"+ id);
+        }
+    }
+
 }

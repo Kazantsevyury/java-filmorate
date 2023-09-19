@@ -29,12 +29,36 @@ public class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
-
     private User user;
+
+    @Test
+    public void testUpdateUserWhenUserIsValidThenReturnsUpdatedUser() {
+        // Arrange
+        User user = new User(1L, "test@test.com", "test", "Test User", LocalDate.now());
+        when(userService.updateUser(user)).thenReturn(user);
+
+        // Act
+        User result = userController.updateUser(user);
+
+        // Assert
+        assertThat(result).isEqualTo(user);
+        verify(userService, times(1)).updateUser(user);
+    }
+
+    @Test
+    public void testUpdateUserWhenUserIsNullThenThrowsIllegalArgumentException() {
+        // Arrange
+        User user = null;
+
+        // Act & Assert
+        assertThatThrownBy(() -> userController.updateUser(user))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User cannot be null");
+    }
 
     @BeforeEach
     public void setUp() {
-        user = new User(1L, "test@test.com", "test", "Test User", LocalDate.now(), new HashSet<>(), new HashSet<>());
+         user = new User(1L, "test@test.com", "test", "Test User", LocalDate.now());
     }
 
     @Test
@@ -125,7 +149,7 @@ public class UserControllerTest {
         when(userService.updateUser(user)).thenReturn(user);
 
         // Act
-        User result = userController.updateUser(id, user);
+        User result = userController.updateUser(user);
 
         // Assert
         assertThat(result).isEqualTo(user);
@@ -139,7 +163,7 @@ public class UserControllerTest {
         when(userService.updateUser(user)).thenThrow(new RuntimeException());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> userController.updateUser(id, user));
+        assertThrows(RuntimeException.class, () -> userController.updateUser(user));
         verify(userService, times(1)).updateUser(user);
     }
 
@@ -246,5 +270,4 @@ public class UserControllerTest {
         userController.deleteFriends(userId, friendId);
         verify(userService, times(1)).deleteFriend(userId, friendId);
     }
-
 }

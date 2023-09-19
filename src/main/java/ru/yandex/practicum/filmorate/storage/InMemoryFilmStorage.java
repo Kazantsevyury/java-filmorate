@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-@Component
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();

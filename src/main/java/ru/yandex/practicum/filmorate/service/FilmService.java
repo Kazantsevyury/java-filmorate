@@ -23,7 +23,7 @@ public class FilmService {
     public Film saveFilm(Film film) {
         Long id = film.getId();
         if (id == null) {
-            film.setId(IdGenerator.getNewFilmId());
+            film.setId(IdGenerator.generateSimpleFilmId());
         }
 
         if (conditionsCheck(film)) {
@@ -34,7 +34,7 @@ public class FilmService {
         }
     }
 
-    private Film getFilmById(long id) {
+    public Film getFilmById(long id) {
         return filmStorage.getById(id);
     }
 
@@ -52,7 +52,7 @@ public class FilmService {
 
     public void idCheck(Film film) {
         if (film.getId() == null) {
-            film.setId(IdGenerator.getNewFilmId());
+            film.setId(IdGenerator.generateSimpleFilmId());
         }
     }
 
@@ -93,13 +93,18 @@ public class FilmService {
     }
 
     public void removeLikeFromFilm(long filmId) {
-        Film film = filmStorage.getById(filmId);
-        if (film != null && film.getLikes() > 0) {
-            film.setLikes(film.getLikes() - 1);
-            filmStorage.updateById(filmId, film);
-        } else {
-            throw new InvalidInputException("Film not found or no likes to remove");
+        if (existenceOfTheFilmIdInStorage(filmId)){
+            Film film = filmStorage.getById(filmId);
+            if (film.getLikes() > 0){
+                film.setLikes(film.getLikes() - 1);
+                filmStorage.deleteById(filmId);
+                filmStorage.save(film);
+                filmStorage.updateTop();
+            }else{
+                throw new InvalidInputException("The movie with doesn't have any likes yet.");
+            }
         }
+
     }
 
     public Collection<Film> getPopularFilms(int count) {
