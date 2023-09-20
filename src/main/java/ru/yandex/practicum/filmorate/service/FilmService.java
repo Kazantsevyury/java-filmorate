@@ -93,14 +93,14 @@ public class FilmService {
     }
 
     public void removeLikeFromFilm(Long filmId) {
-        if (existenceOfTheFilmIdInStorage(filmId)){
+        if (existenceOfTheFilmIdInStorage(filmId)) {
             Film film = filmStorage.getById(filmId);
-            if (film.getLikes() > 0){
+            if (film.getLikes() > 0) {
                 film.setLikes(film.getLikes() - 1);
                 filmStorage.deleteById(filmId);
                 filmStorage.save(film);
                 filmStorage.updateTop();
-            }else{
+            } else {
                 throw new InvalidInputException("The movie with doesn't have any likes yet.");
             }
         }
