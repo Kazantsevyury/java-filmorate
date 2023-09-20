@@ -47,35 +47,13 @@ public class UserService {
         userStorage.deleteById(user.getId());
        return  userStorage.save(user);
 
-
-        /*
-        if (user.getId() == null) {
-            log.error("Failed to update user: User ID is missing");
-            throw new UserNotFoundException("User ID is missing");
-        } else {
-            if (userStorage.existenceOfTheUserIdInStorage(user.getId())) {
-                if (conditionsCheck(user)) {
-                    userStorage.deleteById(user.getId());
-                    User updatedUser = userStorage.save(user);
-                    log.info("User with ID '{}' updated successfully", updatedUser.getId());
-                    return updatedUser;
-                } else {
-                    log.error("Failed to update user due to validation issues: {}", user);
-                    throw new ValidationException("Validation failed for user update");
-                }
-            } else {
-                log.error("Failed to update user: User with ID '{}' not found", user.getId());
-                throw new UserNotFoundException("User not found for ID: " + user.getId());
-            }
-        }
-        */
     }
 
-    private User gerUserById(long id) {
-        return userStorage.getById(id);
+    public User getUserById(Long id) {
+        return userStorage.getUserById(id);
     }
 
-    public void deleteUserById(long id) {
+    public void deleteUserById(Long id) {
         userStorage.deleteById(id);
     }
 
@@ -135,8 +113,8 @@ public class UserService {
     }
 
     public Set<Long> getCommonFriends(Long userId1, Long userId2) {
-        User user1 = userStorage.getById(userId1);
-        User user2 = userStorage.getById(userId2);
+        User user1 = userStorage.getUserById(userId1);
+        User user2 = userStorage.getUserById(userId2);
 
         if (user1 != null && user2 != null) {
             Set<Long> commonFriends = new HashSet<>(user1.getFriends());
@@ -153,7 +131,7 @@ public class UserService {
 
     public void deleteLikeFromUser(Long filmId, Long userID) {
         if (existenceOfTheUserIdInStorage(userID)) {
-            User user = userStorage.getById(userID);
+            User user = userStorage.getUserById(userID);
             Set<Long> likes = user.getLikes();
 
             if (!likes.isEmpty()) {

@@ -26,6 +26,16 @@ public class UserController {
         return userService.saveUser(user);
     }
 
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id){
+        log.info("Created GET request. getUserById");
+        if(userService.existenceOfTheUserIdInStorage(id)){
+            return userService.getUserById(id);
+        }else {
+            throw new UserNotFoundException("User not found.");
+        }
+    }
+
     @PutMapping
     public User updateUser(@RequestBody User user) {
         log.info("Created PUT request. updateUser");

@@ -92,7 +92,7 @@ public class FilmService {
         }
     }
 
-    public void removeLikeFromFilm(long filmId) {
+    public void removeLikeFromFilm(Long filmId) {
         if (existenceOfTheFilmIdInStorage(filmId)){
             Film film = filmStorage.getById(filmId);
             if (film.getLikes() > 0){

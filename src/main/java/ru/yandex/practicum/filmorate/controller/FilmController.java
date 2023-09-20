@@ -79,10 +79,8 @@ public class FilmController {
 
         filmService.removeLikeFromFilm(id);
 
-        // Создаем URL с параметрами пути
         String url = String.format("http://localhost:8080/users/{userId}/deleteLikeFromUser/{filmId}", userId, id);
 
-        // Используем RestTemplate для отправки DELETE-запроса
         restTemplate.delete(url);
     }
 

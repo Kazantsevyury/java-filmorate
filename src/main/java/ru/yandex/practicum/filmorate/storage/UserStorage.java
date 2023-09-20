@@ -8,7 +8,7 @@ import java.util.Set;
 public interface UserStorage {
     User save(User user);
 
-    User getById(Long id);
+    User getUserById(Long id);
 
     void deleteById(Long id);
 
