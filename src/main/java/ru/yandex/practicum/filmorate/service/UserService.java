@@ -1,15 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
-import java.util.logging.Logger;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -39,14 +34,11 @@ public class UserService {
             log.error("Failed to save user due to invalid input: {}", user);
             throw new InvalidInputException("Conditions for adding a user are not met");
         }
-
-
     }
 
     public User updateUser(User user) {
         userStorage.deleteById(user.getId());
        return  userStorage.save(user);
-
     }
 
     public User getUserById(Long id) {
@@ -96,7 +88,6 @@ public class UserService {
             log.info("Email is blank.");
         }
         return false;
-
     }
 
     public Collection<User> getAllUsers() {
@@ -158,6 +149,7 @@ public class UserService {
 
         return sharedFriends;
     }
+
     public boolean existenceOfTheUserIdInStorage(Long id) {
         return userStorage.existenceOfTheUserIdInStorage(id);
     }
