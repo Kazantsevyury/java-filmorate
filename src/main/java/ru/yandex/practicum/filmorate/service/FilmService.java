@@ -104,7 +104,6 @@ public class FilmService {
                 throw new InvalidInputException("The movie with doesn't have any likes yet.");
             }
         }
-
     }
 
     public Collection<Film> getPopularFilms(int count) {
