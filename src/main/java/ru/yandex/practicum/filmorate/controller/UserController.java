@@ -27,11 +27,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
+    public User getUserById(@PathVariable Long id) {
         log.info("Created GET request. getUserById");
-        if(userService.existenceOfTheUserIdInStorage(id)){
+        if (userService.existenceOfTheUserIdInStorage(id)) {
             return userService.getUserById(id);
-        }else {
+        } else {
             throw new UserNotFoundException("User not found.");
         }
     }
@@ -93,7 +93,7 @@ public class UserController {
             userService.addLikesToUser(userId, filmId);
             return ResponseEntity.ok().build();
         } else {
-            log.error("Error adding likes to user with ID %s : ", userId);
+            log.error("Error adding likes to user with ID {}: ", userId);
             throw new UserNotFoundException(String.format("User with %s not found", userId));
         }
     }
@@ -105,9 +105,8 @@ public class UserController {
             userService.deleteLikeFromUser(filmId, userId);
             return ResponseEntity.ok().build();
         } else {
-            log.error("Error delete likes from user with ID %s : ", userId);
+            log.error("Error delete likes from user with ID {}: ", userId);
             throw new UserNotFoundException(String.format("User with %s not found", userId));
         }
     }
-
 }
