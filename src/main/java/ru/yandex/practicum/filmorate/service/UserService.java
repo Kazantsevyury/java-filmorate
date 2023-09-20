@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -32,6 +31,7 @@ public class UserService {
         return name.isEmpty()|| name.isBlank();
 
     }
+
     public User saveUser(User user) {
         Long id = user.getId();
 
@@ -44,6 +44,7 @@ public class UserService {
                 user.setName(user.getLogin());
                 log.info("Users name is empty --> generated neu Name from login for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
             }
+
             User savedUser = userStorage.save(user);
             log.info("User with ID '{}' saved successfully", savedUser.getId());
             return savedUser;
@@ -67,7 +68,6 @@ public class UserService {
             } else {
                 throw new ValidationException("");
             }
-
         }
     }
 

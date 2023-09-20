@@ -24,19 +24,20 @@ public class FilmService {
 
     public Film saveFilm(Film film) {
         Long id = film.getId();
-        if (conditionsCheck(film)){
-            if (id == null){
+        if (conditionsCheck(film)) {
+            if (id == null) {
                 id = IdGenerator.generateSimpleFilmId();
                 film.setId(id);
             }
-            if (existenceOfTheFilmIdInStorage(id)){
+            if (existenceOfTheFilmIdInStorage(id)) {
                 throw new ObjectAlreadyExistException("Failed ID, film is already exist");
             } else {
                 return filmStorage.save(film);
             }
 
-        } else throw new ValidationException("Name, description,realeaseDate or duration is faild");
-
+        } else {
+            throw new ValidationException("Name, description, releaseDate, or duration is failed");
+        }
     }
 
     public Film getFilmById(long id) {
@@ -103,10 +104,10 @@ public class FilmService {
         } else {
             Film film = filmStorage.getById(filmId);
             int likes = film.getLikes();
-            if(likes <= 0){
+            if (likes <= 0) {
                 throw new InvalidInputException("The film has not been given a single like yet.");
             } else {
-                film.setLikes(likes-1);
+                film.setLikes(likes - 1);
                 filmStorage.deleteById(filmId);
                 filmStorage.save(film);
             }
