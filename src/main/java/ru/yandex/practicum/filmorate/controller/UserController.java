@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -39,21 +37,7 @@ public class UserController {
     @PutMapping
     public User updateUser(@RequestBody User user) {
         log.info("Created PUT request. updateUser");
-
-        final Long id = user.getId();
-
-        if (!userService.existenceOfTheUserIdInStorage(id)) {
-            throw new ObjectAlreadyExistException("A User with this ID is not present");
-        } else {
-            if (userService.conditionsCheck(user)) {
-                if (userService.existenceOfTheUserIdInStorage(id)) {
-                    userService.deleteUserById(id);
-                }
-                return userService.saveUser(user);
-            } else {
-                throw new InvalidInputException("Conditions for adding a user are not met");
-            }
-        }
+        return userService.updateUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")

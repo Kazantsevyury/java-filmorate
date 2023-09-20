@@ -30,18 +30,7 @@ public class FilmController {
     @PostMapping
     public Film saveFilm(@RequestBody Film film) {
         log.info("Created POST request. saveFilm");
-
-        filmService.idCheck(film);
-        final Long id = film.getId();
-
-        if (filmService.conditionsCheck(film)) {
-            if (filmService.existenceOfTheFilmIdInStorage(id)) {
-                filmService.deleteFilmById(id);
-            }
-            return filmService.saveFilm(film);
-        } else {
-            throw new InvalidInputException("Conditions for adding a film are not met");
-        }
+        return filmService.saveFilm(film);
     }
 
     @PutMapping
@@ -76,13 +65,13 @@ public class FilmController {
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeFilm(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Created DELETE request. deleteLikeFilm");
-
         filmService.removeLikeFromFilm(id);
 
         String url = String.format("http://localhost:8080/users/{userId}/deleteLikeFromUser/{filmId}", userId, id);
 
         restTemplate.delete(url);
     }
+
 
     @GetMapping("/popular")
     public Collection<Film> getPopularFilms(@RequestParam(name = "count", defaultValue = "10") int count) {

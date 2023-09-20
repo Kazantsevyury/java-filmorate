@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -21,15 +24,28 @@ public class UserService {
 
     private final UserStorage userStorage;
 
+    public boolean isIdNull (Long id){
+        return id == null;
+    }
+
+    public boolean isNameEmptyOrBlank(String name){
+        return name.isEmpty()|| name.isBlank();
+
+    }
     public User saveUser(User user) {
         Long id = user.getId();
-        if (id == null) {
-            user.setId(IdGenerator.generateSimpleUserId());
-            log.info("User ID generated for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
-        }
+
         if (conditionsCheck(user)) {
+            if (isIdNull(id)) {
+                user.setId(IdGenerator.generateSimpleUserId());
+                log.info("User ID = 0 --> generated neu ID for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
+            }
+            if (isNameEmptyOrBlank(user.getName())) {
+                user.setName(user.getLogin());
+                log.info("Users name is empty --> generated neu Name from login for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
+            }
             User savedUser = userStorage.save(user);
-            log.info("User with ID '{}' updated successfully", savedUser.getId());
+            log.info("User with ID '{}' saved successfully", savedUser.getId());
             return savedUser;
         } else {
             log.error("Failed to save user due to invalid input: {}", user);
@@ -38,8 +54,21 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        userStorage.deleteById(user.getId());
-       return  userStorage.save(user);
+
+        final Long id = user.getId();
+
+        if  ( isIdNull(id) || !(existenceOfTheUserIdInStorage(id))) {
+            log.info("Unknow User, or id = null");
+            throw new UserNotFoundException("Unknow User, or id = null");
+        } else {
+            if (conditionsCheck(user)) {
+                userStorage.deleteById(user.getId());
+                return  userStorage.save(user);
+            } else {
+                throw new ValidationException("");
+            }
+
+        }
     }
 
     public User getUserById(Long id) {
@@ -48,12 +77,6 @@ public class UserService {
 
     public void deleteUserById(Long id) {
         userStorage.deleteById(id);
-    }
-
-    public void idCheck(User user) {
-        if (user.getId() == null) {
-            user.setId(IdGenerator.generateSimpleUserId());
-        }
     }
 
     public boolean conditionsCheck(User user) {

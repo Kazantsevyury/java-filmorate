@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.IdGenerator;
@@ -22,16 +24,19 @@ public class FilmService {
 
     public Film saveFilm(Film film) {
         Long id = film.getId();
-        if (id == null) {
-            film.setId(IdGenerator.generateSimpleFilmId());
-        }
+        if (conditionsCheck(film)){
+            if (id == null){
+                id = IdGenerator.generateSimpleFilmId();
+                film.setId(id);
+            }
+            if (existenceOfTheFilmIdInStorage(id)){
+                throw new ObjectAlreadyExistException("Failed ID, film is already exist");
+            } else {
+                return filmStorage.save(film);
+            }
 
-        if (conditionsCheck(film)) {
-            idCheck(film);
-            return filmStorage.save(film);
-        } else {
-            throw new InvalidInputException("Conditions for adding a film are not met");
-        }
+        } else throw new ValidationException("Name, description,realeaseDate or duration is faild");
+
     }
 
     public Film getFilmById(long id) {
@@ -93,15 +98,17 @@ public class FilmService {
     }
 
     public void removeLikeFromFilm(Long filmId) {
-        if (existenceOfTheFilmIdInStorage(filmId)) {
+        if (!(existenceOfTheFilmIdInStorage(filmId))) {
+            throw new InvalidInputException("Film not found");
+        } else {
             Film film = filmStorage.getById(filmId);
-            if (film.getLikes() > 0) {
-                film.setLikes(film.getLikes() - 1);
+            int likes = film.getLikes();
+            if(likes <= 0){
+                throw new InvalidInputException("The film has not been given a single like yet.");
+            } else {
+                film.setLikes(likes-1);
                 filmStorage.deleteById(filmId);
                 filmStorage.save(film);
-                filmStorage.updateTop();
-            } else {
-                throw new InvalidInputException("The movie with doesn't have any likes yet.");
             }
         }
     }
