@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidInputException;
@@ -23,13 +22,12 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    public boolean isIdNull (Long id){
+    public boolean isIdNull(Long id) {
         return id == null;
     }
 
-    public boolean isNameEmptyOrBlank(String name){
-        return name.isEmpty()|| name.isBlank();
-
+    public boolean isNameEmptyOrBlank(String name) {
+        return name.isEmpty() || name.isBlank();
     }
 
     public User saveUser(User user) {
@@ -38,11 +36,11 @@ public class UserService {
         if (conditionsCheck(user)) {
             if (isIdNull(id)) {
                 user.setId(IdGenerator.generateSimpleUserId());
-                log.info("User ID = 0 --> generated neu ID for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
+                log.info("User ID = 0 --> generated new ID for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
             }
             if (isNameEmptyOrBlank(user.getName())) {
                 user.setName(user.getLogin());
-                log.info("Users name is empty --> generated neu Name from login for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
+                log.info("User's name is empty --> generated new Name from login for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
             }
 
             User savedUser = userStorage.save(user);
@@ -55,18 +53,17 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-
         final Long id = user.getId();
 
-        if  ( isIdNull(id) || !(existenceOfTheUserIdInStorage(id))) {
-            log.info("Unknow User, or id = null");
-            throw new UserNotFoundException("Unknow User, or id = null");
+        if (isIdNull(id) || !(existenceOfTheUserIdInStorage(id))) {
+            log.info("Unknown User, or id = null");
+            throw new UserNotFoundException("Unknown User, or id = null");
         } else {
             if (conditionsCheck(user)) {
                 userStorage.deleteById(user.getId());
-                return  userStorage.save(user);
+                return userStorage.save(user);
             } else {
-                throw new ValidationException("");
+                throw new ValidationException("Validation failed for user update");
             }
         }
     }
@@ -96,11 +93,11 @@ public class UserService {
                     log.info("Login is not blank and does not contain spaces.");
 
                     if (birthday.isBefore(LocalDate.now())) {
-                        log.info("Birthday is before current date.");
+                        log.info("Birthday is before the current date.");
 
                         return true;
                     } else {
-                        log.info("Birthday is not before current date.");
+                        log.info("Birthday is not before the current date.");
                     }
                 } else {
                     log.info("Login is blank or contains spaces.");
@@ -144,9 +141,9 @@ public class UserService {
         userStorage.addLike(userId, filmId);
     }
 
-    public void deleteLikeFromUser(Long filmId, Long userID) {
-        if (existenceOfTheUserIdInStorage(userID)) {
-            User user = userStorage.getUserById(userID);
+    public void deleteLikeFromUser(Long filmId, Long userId) {
+        if (existenceOfTheUserIdInStorage(userId)) {
+            User user = userStorage.getUserById(userId);
             Set<Long> likes = user.getLikes();
 
             if (!likes.isEmpty()) {
