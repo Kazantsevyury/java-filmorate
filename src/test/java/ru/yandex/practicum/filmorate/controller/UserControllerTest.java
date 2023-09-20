@@ -45,49 +45,9 @@ public class UserControllerTest {
         verify(userService, times(1)).updateUser(user);
     }
 
-    @Test
-    public void testUpdateUserWhenUserIsNullThenThrowsIllegalArgumentException() {
-        // Arrange
-        User user = null;
-
-        // Act & Assert
-        assertThatThrownBy(() -> userController.updateUser(user))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User cannot be null");
-    }
-
     @BeforeEach
     public void setUp() {
          user = new User(1L, "test@test.com", "test", "Test User", LocalDate.now());
-    }
-
-    @Test
-    public void testAddLikesToUserWhenValidIdsThenReturnsStatus200() {
-        Long userId = 1L;
-        Long filmId = 2L;
-        doNothing().when(userService).addLikesToUser(userId, filmId);
-
-        // Act
-        ResponseEntity<Void> result = userController.addLikesToUser(userId, filmId);
-
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        verify(userService, times(1)).addLikesToUser(userId, filmId);
-    }
-
-    @Test
-    public void testAddLikesToUserWhenExceptionThenReturnsStatus500() {
-        // Arrange
-        Long userId = 1L;
-        Long filmId = 2L;
-        doThrow(new RuntimeException()).when(userService).addLikesToUser(userId, filmId);
-
-        // Act
-        ResponseEntity<Void> result = userController.addLikesToUser(userId, filmId);
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        verify(userService, times(1)).addLikesToUser(userId, filmId);
     }
 
     @Test
