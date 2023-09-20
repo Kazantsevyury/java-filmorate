@@ -44,13 +44,13 @@ public class IdGenerator {
         return randomNumber;
     }
 
-    public static long generateSimpleUserId(){
+    public static long generateSimpleUserId() {
         simleUserId++;
         userIds.add(simleUserId);
         return simleUserId;
     }
 
-    public static long generateSimpleFilmId(){
+    public static long generateSimpleFilmId() {
         simleFilmId++;
         filmIds.add(simleFilmId);
         return simleFilmId;
