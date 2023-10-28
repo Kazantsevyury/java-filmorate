@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
-
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -23,15 +22,15 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-
     private final LocalDate birthOfCinema = LocalDate.of(1895, Month.DECEMBER, 28);
 
     public Film saveFilm(Film film) {
-                return filmStorage.save(film);
+        return filmStorage.save(film);
     }
-    public Film update(Film film){
+
+    public Film update(Film film) {
         return filmStorage.update(film);
-    };
+    }
 
     public Film getFilmById(long id) {
         return filmStorage.getById(id);
@@ -52,11 +51,11 @@ public class FilmService {
     }
 
     public List<Film> getTenPopularFilms(Long count) {
-
-        return filmStorage.getAllFilms().stream().sorted((f0, f1) -> compare(f0.getLikes().size(),
-                f1.getLikes().size())).limit(count).collect(Collectors.toList());
+        return filmStorage.getAllFilms().stream()
+                .sorted((f0, f1) -> compare(f0.getLikes().size(), f1.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
-
 
     public String removeLikeFromFilm(Long id, Long userId) {
         findId(id, userId);
@@ -65,8 +64,10 @@ public class FilmService {
     }
 
     public Collection<Film> getPopularFilms(Integer count) {
-        return filmStorage.getAllFilms().stream().sorted((f0, f1) -> compare(f0.getLikes().size(),
-                f1.getLikes().size())).limit(count).collect(Collectors.toList());
+        return filmStorage.getAllFilms().stream()
+                .sorted((f0, f1) -> compare(f0.getLikes().size(), f1.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private void findId(Long id, Long userId) {
@@ -77,7 +78,8 @@ public class FilmService {
             throw new IncorrectValueException(id);
         }
     }
+
     private static int compare(int f0, int f1) {
-        return f1 - f0; //прямой порядок сортировки
+        return f1 - f0;
     }
 }
