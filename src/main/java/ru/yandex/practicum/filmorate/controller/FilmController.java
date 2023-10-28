@@ -3,10 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -23,7 +21,6 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
-
 
     @ApiOperation("Getting a list of all movies.")
     @GetMapping
@@ -45,6 +42,7 @@ public class FilmController {
         log.info("Created PUT request. updateFilm");
         return filmService.update(film);
     }
+
     @ApiOperation("Adding a like from user X to movie Y.")
     @PutMapping("/{id}/like/{userId}")
     public String addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
