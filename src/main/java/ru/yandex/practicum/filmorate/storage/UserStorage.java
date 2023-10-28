@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserStorage {
+
     User save(User user);
 
     User getUserById(Long id);
@@ -15,5 +16,6 @@ public interface UserStorage {
     User updateUser(User user);
 
     List<User> getAllUsers();
+
     Map<Long, User> getMapUsers();
 }
