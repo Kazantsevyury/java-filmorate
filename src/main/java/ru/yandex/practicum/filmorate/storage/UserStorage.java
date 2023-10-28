@@ -9,13 +9,13 @@ public interface UserStorage {
 
     User save(User user);
 
-    User getUserById(Long id);
+    User getUserById(int id);
 
-    void deleteById(Long id);
+    void deleteById(int id);
 
     User updateUser(User user);
 
     List<User> getAllUsers();
 
-    Map<Long, User> getMapUsers();
+    Map<Integer, User> getMapUsers();
 }

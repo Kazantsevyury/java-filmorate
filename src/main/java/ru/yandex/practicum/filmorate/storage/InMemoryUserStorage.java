@@ -12,8 +12,10 @@ import java.util.*;
 @Component
 @AllArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Long, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private final UserValidator userValidator;
+    private final IdGenerator idGenerator;
+
 
     @Override
     public User save(User user) {
@@ -21,7 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
             if (Objects.isNull(user.getName()) || user.getName().isEmpty()) {
                 user.setName(user.getLogin());
             }
-            Long id = IdGenerator.generateSimpleUserId();
+            int id = idGenerator.getNextFreeId();
             user.setId(id);
             users.put(id, user);
         } else {
@@ -43,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(int id) {
         if (users.containsKey(id)) {
             return users.get(id);
         } else {
@@ -53,7 +55,7 @@ public class InMemoryUserStorage implements UserStorage {
 
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(int id) {
         users.remove(id);
     }
 
@@ -64,7 +66,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Map<Long, User> getMapUsers() {
+    public Map<Integer, User> getMapUsers() {
         return users;
     }
 

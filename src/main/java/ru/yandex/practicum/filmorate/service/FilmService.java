@@ -32,11 +32,11 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Film getFilmById(long id) {
+    public Film getFilmById(int id) {
         return filmStorage.getById(id);
     }
 
-    public void deleteFilmById(long id) {
+    public void deleteFilmById(int id) {
         filmStorage.deleteById(id);
     }
 
@@ -44,20 +44,20 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public String addLikeToFilm(Long id, Long userId) {
+    public String addLikeToFilm(int id, int userId) {
         findId(id, userId);
         filmStorage.getMapFilms().get(id).getLikes().add(userId);
         return String.format("The user with id: %s liked the movie with id: %s.", userId, id);
     }
 
-    public List<Film> getTenPopularFilms(Long count) {
+    public List<Film> getTenPopularFilms(int count) {
         return filmStorage.getAllFilms().stream()
                 .sorted((f0, f1) -> compare(f0.getLikes().size(), f1.getLikes().size()))
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
-    public String removeLikeFromFilm(Long id, Long userId) {
+    public String removeLikeFromFilm(int id, int userId) {
         findId(id, userId);
         filmStorage.getMapFilms().get(id).getLikes().remove(userId);
         return String.format("The user with id: %s removed the like from the movie with id: %s.", userId, id);
@@ -70,7 +70,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    private void findId(Long id, Long userId) {
+    private void findId(int id, int userId) {
         if (!filmStorage.getMapFilms().containsKey(id)) {
             throw new IncorrectValueException(id);
         }

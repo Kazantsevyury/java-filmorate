@@ -15,16 +15,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
     private final FilmValidator filmValidator;
+    private final IdGenerator generatorId = new IdGenerator();
 
-    private final Map<Long, Film> films = new HashMap<>();
-    private final TreeMap<Long, Film> filmsTop = new TreeMap<>(
-            Collections.reverseOrder()
-    );
+    private final Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public Film save(Film film) {
         if (filmValidator.validatorFilm(film)) {
-            Long id = IdGenerator.generateSimpleFilmId();
+            int id = generatorId.getNextFreeId();;
             film.setId(id);
             films.put(id, film);
         } else {
@@ -46,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getById(Long id) {
+    public Film getById(int id) {
         if (films.containsKey(id)) {
             return films.get(id);
         } else {
@@ -55,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(int id) {
         if (films.containsKey(id)) {
         films.remove(id);
         } else {
@@ -70,7 +68,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Map<Long, Film> getMapFilms() {
+    public Map<Integer, Film> getMapFilms() {
         return films;
     }
 }

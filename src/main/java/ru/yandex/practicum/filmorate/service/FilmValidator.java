@@ -24,7 +24,7 @@ public class FilmValidator {
         return film.getDuration() >= 0;
     }
 
-    public void validatorParameter(Long id, Long filmId) {
+    public void validatorParameter(int id, int filmId) {
         if (id < 0) {
             throw new IncorrectParameterException("userId");
         }

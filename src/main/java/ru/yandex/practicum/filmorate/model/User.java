@@ -17,7 +17,7 @@ import java.util.Set;
 @NotNull
 @ApiModel(description = "User")
 public class User {
-    private Long id;
+    private int id;
 
     @Email
     private String email;
@@ -29,5 +29,5 @@ public class User {
     private final LocalDate birthday;
 
     @JsonIgnore
-    private final Set<Long> idFriends = new HashSet<>();
+    private final Set<Integer> idFriends = new HashSet<>();
 }

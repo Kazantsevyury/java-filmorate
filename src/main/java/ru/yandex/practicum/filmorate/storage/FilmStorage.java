@@ -13,11 +13,11 @@ public interface FilmStorage {
 
     Film update(@Valid @RequestBody Film film);
 
-    Film getById(Long id);
+    Film getById(int id);
 
-    void deleteById(Long id);
+    void deleteById(int id);
 
     List<Film> getAllFilms();
 
-    Map<Long, Film> getMapFilms();
+    Map<Integer, Film> getMapFilms();
 }

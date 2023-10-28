@@ -45,7 +45,7 @@ public class FilmController {
 
     @ApiOperation("Adding a like from user X to movie Y.")
     @PutMapping("/{id}/like/{userId}")
-    public String addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
+    public String addLikeToFilm(@PathVariable int id, @PathVariable int userId) {
         log.info("Created PUT request. likeFilm");
         return filmService.addLikeToFilm(id, userId);
 
@@ -53,14 +53,14 @@ public class FilmController {
 
     @ApiOperation("Removing a like from user X to movie Y.")
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLikeFromFilm(@PathVariable Long id, @PathVariable Long userId) {
+    public void removeLikeFromFilm(@PathVariable int id, @PathVariable int userId) {
         log.info("Created DELETE request. deleteLikeFilm");
         filmService.removeLikeFromFilm(id, userId);
     }
 
     @ApiOperation("Getting a list with TOP movies. ")
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Long count) {
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) int count) {
         if (count < 0) {
             throw new IncorrectValueException(count);
         }
@@ -71,7 +71,7 @@ public class FilmController {
 
     @ApiOperation("Getting a movie by id.")
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id) {
+    public Film getFilmById(@PathVariable int id) {
         log.info("Created GET request. getFilmById");
         return filmService.getFilmById(id);
     }

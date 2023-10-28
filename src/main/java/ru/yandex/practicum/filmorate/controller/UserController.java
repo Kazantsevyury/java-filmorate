@@ -30,7 +30,7 @@ public class UserController {
 
     @ApiOperation("Getting a user by Id.")
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable int id) {
         log.info("Created GET request. getUserById");
         return userService.getUserById(id);
     }
@@ -44,7 +44,7 @@ public class UserController {
 
     @ApiOperation("Adding a new friend X to user Y.")
     @PutMapping("/{userId}/friends/{friendId}")
-    public String addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+    public String addFriend(@PathVariable int userId, @PathVariable int friendId) {
         log.info("Created PUT request. addFriend");
         userValidator.validateParameter(userId, friendId);
         return userService.addFriend(userId, friendId);
@@ -52,7 +52,7 @@ public class UserController {
 
     @ApiOperation("Removing a new friend X to user Y.")
     @DeleteMapping("/{userId}/friends/{friendId}")
-    public String deleteFriends(@PathVariable Long userId, @PathVariable Long friendId) {
+    public String deleteFriends(@PathVariable int userId, @PathVariable int friendId) {
         log.info("Created Delete request. deleteFriends");
         userValidator.validateParameter(userId, friendId);
         return userService.deleteFriend(userId, friendId);
@@ -60,14 +60,14 @@ public class UserController {
 
     @ApiOperation("Getting a list with all friends from user Y.")
     @GetMapping("/{id}/friends")
-    public List<User> getFriendsSet(@PathVariable Long id) {
+    public List<User> getFriendsSet(@PathVariable int id) {
         log.info("Created Get request. getFriendsSet");
         return userService.getListFriendsUser(id);
     }
 
     @ApiOperation("Getting a list of friends shared with another user.")
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getListOfFriendsSharedWithAnotherUser(@PathVariable Long id, @PathVariable Long otherId) {
+    public List<User> getListOfFriendsSharedWithAnotherUser(@PathVariable int id, @PathVariable int otherId) {
         log.info("Created Get request. getListOfFriendsSharedWithAnotherUser");
         return userService.getListOfFriendsSharedWithAnotherUser(id, otherId);
     }

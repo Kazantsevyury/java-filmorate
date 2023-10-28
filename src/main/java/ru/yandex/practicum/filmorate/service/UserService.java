@@ -24,11 +24,11 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(int id) {
         return userStorage.getUserById(id);
     }
 
-    public void deleteUserById(Long id) {
+    public void deleteUserById(int id) {
         userStorage.deleteById(id);
     }
 
@@ -36,7 +36,7 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public String addFriend(Long userId, Long friendId) {
+    public String addFriend(int userId, int friendId) {
         findId(userId, friendId);
         userStorage.getMapUsers().get(userId).getIdFriends().add(friendId);
         userStorage.getMapUsers().get(friendId).getIdFriends().add(userId);
@@ -45,17 +45,17 @@ public class UserService {
     }
 
 
-    public String deleteFriend(Long userId, Long friendId) {
+    public String deleteFriend(int userId, int friendId) {
         findId(userId, friendId);
         userStorage.getMapUsers().get(userId).getIdFriends().remove(friendId);
         return String.format("The user with id %s has been removed from the friends of the user with id %s!", friendId, userId);
     }
 
-    public List<User> getListOfFriendsSharedWithAnotherUser(Long userId, Long friendId) {
+    public List<User> getListOfFriendsSharedWithAnotherUser(int userId, int friendId) {
         findId(userId, friendId);
         List<User> listMutualFriends = new ArrayList<>();
 
-        for (Long id : userStorage.getUserById(userId).getIdFriends()) {
+        for (Integer id : userStorage.getUserById(userId).getIdFriends()) {
             if (userStorage.getUserById(friendId).getIdFriends().contains(id)) {
                 listMutualFriends.add(userStorage.getUserById(id));
             }
@@ -67,13 +67,13 @@ public class UserService {
 
 
 
-    public List<User> getListFriendsUser(Long id) {
+    public List<User> getListFriendsUser(int id) {
         List<User> allFriends = new ArrayList<>();
         if (!userStorage.getMapUsers().containsKey(id)) {
             throw new UserNotFoundException(String.format("The user with this id: %s does not exist.", id));
         }
-        List<Long> usersId = new ArrayList<>(userStorage.getUserById(id).getIdFriends());
-        for (Long userid : usersId) {
+        List<Integer> usersId = new ArrayList<>(userStorage.getUserById(id).getIdFriends());
+        for (int userid : usersId) {
             allFriends.add(userStorage.getUserById(id));
         }
         log.info("Number of friends: " + allFriends.size());
@@ -81,7 +81,7 @@ public class UserService {
     }
 
 
-    private void findId(Long userId, Long friendId) {
+    private void findId(int userId, int friendId) {
         if (!userStorage.getMapUsers().containsKey(userId)) {
             throw new UserNotFoundException(String.format("The user with this id: %s does not exist.", userId));
         }

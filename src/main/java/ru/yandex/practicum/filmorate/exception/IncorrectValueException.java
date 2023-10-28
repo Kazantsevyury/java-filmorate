@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class IncorrectValueException extends RuntimeException {
 
-    private final Long value;
+    private final int value;
 
-    public IncorrectValueException(Long value) {
+    public IncorrectValueException(int value) {
         this.value = value;
     }
 }

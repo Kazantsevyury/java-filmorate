@@ -16,12 +16,12 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NotNull
 public class Film {
-    private Long id;
+    private int id;
     @NotBlank
     private final String name;
     @NotBlank
     private final String description;
     private final LocalDate releaseDate;
     private final int duration;
-    private final Set<Long> likes = new HashSet<>();
+    private final Set<Integer> likes = new HashSet<>();
 }
