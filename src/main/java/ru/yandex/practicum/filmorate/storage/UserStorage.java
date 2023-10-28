@@ -16,5 +16,4 @@ public interface UserStorage {
 
     List<User> getAllUsers();
     Map<Long, User> getMapUsers();
-
 }
