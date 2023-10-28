@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface FilmStorage {
+
     Film save(@Valid @RequestBody Film film);
 
     Film update(@Valid @RequestBody Film film);
@@ -17,5 +18,6 @@ public interface FilmStorage {
     void deleteById(Long id);
 
     List<Film> getAllFilms();
+
     Map<Long, Film> getMapFilms();
 }
