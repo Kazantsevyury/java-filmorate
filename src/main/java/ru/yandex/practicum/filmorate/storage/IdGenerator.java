@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
 @Component
 public class IdGenerator {
     private static Set<Long> filmIds = new HashSet<>();
