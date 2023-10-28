@@ -51,23 +51,14 @@ public class FilmService {
     }
 
     public List<Film> getTenPopularFilms(int count) {
-        return filmStorage.getAllFilms().stream()
-                .sorted((f0, f1) -> compare(f0.getLikes().size(), f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getAllFilms().stream().sorted((f0, f1) -> compare(f0.getLikes().size(),
+                f1.getLikes().size())).limit(count).collect(Collectors.toList());
     }
 
     public String removeLikeFromFilm(int id, int userId) {
         findId(id, userId);
         filmStorage.getMapFilms().get(id).getLikes().remove(userId);
         return String.format("The user with id: %s removed the like from the movie with id: %s.", userId, id);
-    }
-
-    public Collection<Film> getPopularFilms(Integer count) {
-        return filmStorage.getAllFilms().stream()
-                .sorted((f0, f1) -> compare(f0.getLikes().size(), f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
     }
 
     private void findId(int id, int userId) {
