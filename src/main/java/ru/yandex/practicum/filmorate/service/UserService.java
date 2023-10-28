@@ -3,17 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.InvalidInputException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -22,50 +16,12 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    public boolean isIdNull(Long id) {
-        return id == null;
-    }
-
-    public boolean isNameEmptyOrBlank(String name) {
-        return name.isEmpty() || name.isBlank();
-    }
-
     public User saveUser(User user) {
-        Long id = user.getId();
-
-        if (conditionsCheck(user)) {
-            if (isIdNull(id)) {
-                user.setId(IdGenerator.generateSimpleUserId());
-                log.info("User ID = 0 --> generated new ID for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
-            }
-            if (isNameEmptyOrBlank(user.getName())) {
-                user.setName(user.getLogin());
-                log.info("User's name is empty --> generated new Name from login for user with email '{}' and login '{}'", user.getEmail(), user.getLogin());
-            }
-
-            User savedUser = userStorage.save(user);
-            log.info("User with ID '{}' saved successfully", savedUser.getId());
-            return savedUser;
-        } else {
-            log.error("Failed to save user due to invalid input: {}", user);
-            throw new InvalidInputException("Conditions for adding a user are not met");
-        }
+        return userStorage.save(user);
     }
 
     public User updateUser(User user) {
-        final Long id = user.getId();
-
-        if (isIdNull(id) || !(existenceOfTheUserIdInStorage(id))) {
-            log.info("Unknown User, or id = null");
-            throw new UserNotFoundException("Unknown User, or id = null");
-        } else {
-            if (conditionsCheck(user)) {
-                userStorage.deleteById(user.getId());
-                return userStorage.save(user);
-            } else {
-                throw new ValidationException("Validation failed for user update");
-            }
-        }
+        return userStorage.updateUser(user);
     }
 
     public User getUserById(Long id) {
@@ -76,102 +32,61 @@ public class UserService {
         userStorage.deleteById(id);
     }
 
-    public boolean conditionsCheck(User user) {
-        Long id = user.getId();
-        String email = user.getEmail();
-        String login = user.getLogin();
-        String name = user.getName();
-        LocalDate birthday = user.getBirthday();
-
-        if (!email.isBlank()) {
-            log.info("Email is not blank.");
-
-            if (email.contains("@")) {
-                log.info("Email contains '@'.");
-
-                if (!login.isBlank() && !login.contains(" ")) {
-                    log.info("Login is not blank and does not contain spaces.");
-
-                    if (birthday.isBefore(LocalDate.now())) {
-                        log.info("Birthday is before the current date.");
-
-                        return true;
-                    } else {
-                        log.info("Birthday is not before the current date.");
-                    }
-                } else {
-                    log.info("Login is blank or contains spaces.");
-                }
-            } else {
-                log.info("Email does not contain '@'.");
-            }
-        } else {
-            log.info("Email is blank.");
-        }
-        return false;
-    }
-
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
-    public User addFriend(Long userId, Long friendId) {
-        return userStorage.addFriend(userId, friendId);
+    public String addFriend(Long userId, Long friendId) {
+        findId(userId, friendId);
+        userStorage.getMapUsers().get(userId).getIdFriends().add(friendId);
+        userStorage.getMapUsers().get(friendId).getIdFriends().add(userId);
+        log.info(String.format("Adding a friend with id: %s to the user with id: %s as a friend.", friendId, userId));
+        return String.format("The user with id %s has been added as a friend to the user with id %s!", friendId, userId);
     }
 
-    public void deleteFriend(Long userId, Long friendId) {
-        userStorage.deleteFriend(userId, friendId);
-        userStorage.deleteFriend(friendId, userId);
+
+    public String deleteFriend(Long userId, Long friendId) {
+        findId(userId, friendId);
+        userStorage.getMapUsers().get(userId).getIdFriends().remove(friendId);
+        return String.format("The user with id %s has been removed from the friends of the user with id %s!", friendId, userId);
     }
 
-    public Set<Long> getCommonFriends(Long userId1, Long userId2) {
-        User user1 = userStorage.getUserById(userId1);
-        User user2 = userStorage.getUserById(userId2);
+    public List<User> getListOfFriendsSharedWithAnotherUser(Long userId, Long friendId) {
+        findId(userId, friendId);
+        List<User> listMutualFriends = new ArrayList<>();
 
-        if (user1 != null && user2 != null) {
-            Set<Long> commonFriends = new HashSet<>(user1.getFriends());
-            commonFriends.retainAll(user2.getFriends());
-            return commonFriends;
-        } else {
-            throw new InvalidInputException("User 1 or user 2 not found.");
-        }
-    }
-
-    public void addLikesToUser(Long userId, Long filmId) {
-        userStorage.addLike(userId, filmId);
-    }
-
-    public void deleteLikeFromUser(Long filmId, Long userId) {
-        if (existenceOfTheUserIdInStorage(userId)) {
-            User user = userStorage.getUserById(userId);
-            Set<Long> likes = user.getLikes();
-
-            if (!likes.isEmpty()) {
-                likes.remove(filmId);
-                user.setLikes(likes);
-                userStorage.save(user);
-            } else {
-                throw new InvalidInputException("The user has not yet put a single like to the movies.");
+        for (Long id : userStorage.getUserById(userId).getIdFriends()) {
+            if (userStorage.getUserById(friendId).getIdFriends().contains(id)) {
+                listMutualFriends.add(userStorage.getUserById(id));
             }
         }
+        log.info("Current number of mutual friends: " + userStorage.getMapUsers().size());
+        return listMutualFriends;
     }
 
-    public Set<Long> getFriendsSet(Long id) {
-        return userStorage.getFriendsSet(id);
+
+
+
+    public List<User> getListFriendsUser(Long id) {
+        List<User> allFriends = new ArrayList<>();
+        if (!userStorage.getMapUsers().containsKey(id)) {
+            throw new UserNotFoundException(String.format("The user with this id: %s does not exist.", id));
+        }
+        List<Long> usersId = new ArrayList<>(userStorage.getUserById(id).getIdFriends());
+        for (Long userid : usersId) {
+            allFriends.add(userStorage.getUserById(id));
+        }
+        log.info("Number of friends: " + allFriends.size());
+        return allFriends;
     }
 
-    public Set<Long> getListOfFriendsSharedWithAnotherUser(Long id, Long otherId) {
-        Set<Long> friendsSet1 = userStorage.getFriendsSet(id);
-        Set<Long> friendsSet2 = userStorage.getFriendsSet(otherId);
 
-        Set<Long> sharedFriends = new HashSet<>(friendsSet1);
-
-        sharedFriends.retainAll(friendsSet2);
-
-        return sharedFriends;
-    }
-
-    public boolean existenceOfTheUserIdInStorage(Long id) {
-        return userStorage.existenceOfTheUserIdInStorage(id);
+    private void findId(Long userId, Long friendId) {
+        if (!userStorage.getMapUsers().containsKey(userId)) {
+            throw new UserNotFoundException(String.format("The user with this id: %s does not exist.", userId));
+        }
+        if (!userStorage.getMapUsers().containsKey(friendId)) {
+            throw new UserNotFoundException(String.format("There is no friend with this id: %s.", friendId));
+        }
     }
 }

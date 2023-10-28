@@ -1,13 +1,20 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmValidator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Repository
+@Component
+@Slf4j
+@RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
+    private final FilmValidator filmValidator;
 
     private final Map<Long, Film> films = new HashMap<>();
     private final TreeMap<Long, Film> filmsTop = new TreeMap<>(
@@ -16,80 +23,54 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film save(Film film) {
-        films.put(film.getId(), film);
-        updateTop();
+        if (filmValidator.validatorFilm(film)) {
+            Long id = IdGenerator.generateSimpleFilmId();
+            film.setId(id);
+            films.put(id, film);
+        } else {
+            throw new ValidationException("User did not pass validation.");
+        }
         return films.get(film.getId());
     }
 
     @Override
-    public Film getById(Long id) {
-        return films.get(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        films.remove(id);
-        updateTop();
-    }
-
-    @Override
-    public Collection<Film> getAllFilms() {
-        return films.values();
-    }
-
-    @Override
-    public boolean existenceOfTheFilmIdInStorage(Long id) {
-        return films.containsKey(id);
-    }
-
-    @Override
-    public void updateById(Long id, Film film) {
-        films.remove(id);
-        films.put(film.getId(), film);
-        updateTop();
-    }
-
-    @Override
-    public Collection<Film> getMostLikedFilms(int limit) {
-        return films.values().stream()
-                .sorted(Comparator.comparingInt(Film::getLikes).reversed())
-                .limit(limit)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Film addLike(Long userId, Long filmId) {
-        Film film = films.get(filmId);
-        film.setId(film.getId() + 1);
-        films.remove(filmId);
-        films.put(film.getId(), film);
-        updateTop();
+    public Film update(Film film) {
+        if (filmValidator.validatorFilm(film)) {
+            if (films.containsKey(film.getId())) {
+                films.put(film.getId(), film);
+            } else {
+                throw new ValidationException("id: " + film.getId() + " not exestiert");
+            }
+        }
         return film;
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
-        return getTopFilms(count);
-    }
-
-    @Override
-    public void updateTop() {
-        filmsTop.clear();
-
-        for (Film film : films.values()) {
-            if (film.getLikes() != 0) {
-                filmsTop.put(film.getId(), film);
-            }
+    public Film getById(Long id) {
+        if (films.containsKey(id)) {
+            return films.get(id);
+        } else {
+            throw new IncorrectValueException(id);
         }
     }
 
     @Override
-    public List<Film> getTopFilms(int count) {
-        updateTop();
-        List<Film> topFilms = new ArrayList<>(filmsTop.values());
-        if (count >= topFilms.size()) {
-            return topFilms;
+    public void deleteById(Long id) {
+        if (films.containsKey(id)) {
+        films.remove(id);
+        } else {
+                throw new IncorrectValueException(id);
         }
-        return topFilms.subList(0, count);
+    }
+
+    @Override
+    public List<Film> getAllFilms() {
+        List<Film> films1 = new ArrayList<>(films.values());
+        return films1;
+    }
+
+    @Override
+    public Map<Long, Film> getMapFilms() {
+        return films;
     }
 }

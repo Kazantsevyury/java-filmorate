@@ -1,33 +1,33 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Accessors(chain = true)
+@RequiredArgsConstructor
+@NotNull
+@ApiModel(description = "User")
 public class User {
     private Long id;
+
+    @Email
     private String email;
-    private String login;
+
+    @NotBlank
+    private final String login;
+
     private String name;
-    private LocalDate birthday;
-    private Set<Long> friends = new HashSet<>();
-    private Set<Long> likes = new HashSet<>();
+    private final LocalDate birthday;
 
-    public User(Long id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-
-    }
+    @JsonIgnore
+    private final Set<Long> IdFriends = new HashSet<>();
 }

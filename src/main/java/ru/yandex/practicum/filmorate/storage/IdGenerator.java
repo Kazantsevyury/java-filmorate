@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
+@Component
 public class IdGenerator {
     private static Set<Long> filmIds = new HashSet<>();
     private static Set<Long> userIds = new HashSet<>();
@@ -17,7 +19,7 @@ public class IdGenerator {
     public static long getNewFilmId() {
         long randomNumber;
         do {
-            randomNumber = Math.abs(random.nextLong()); // Генерировать положительное значение
+            randomNumber = Math.abs(random.nextLong());
         } while (filmIds.contains(randomNumber) && recursionCount < MAX_RECURSION_COUNT);
 
         if (recursionCount >= MAX_RECURSION_COUNT) {
