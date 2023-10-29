@@ -28,10 +28,6 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public void deleteUserById(int id) {
-        userStorage.deleteById(id);
-    }
-
     public List<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
@@ -63,9 +59,6 @@ public class UserService {
         log.info("Current number of mutual friends: " + userStorage.getMapUsers().size());
         return listMutualFriends;
     }
-
-
-
 
     public List<User> getListFriendsUser(int id) {
         List<User> allFriends = new ArrayList<>();

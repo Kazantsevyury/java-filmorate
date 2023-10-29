@@ -11,8 +11,6 @@ public interface UserStorage {
 
     User getUserById(int id);
 
-    void deleteById(int id);
-
     User updateUser(User user);
 
     List<User> getAllUsers();

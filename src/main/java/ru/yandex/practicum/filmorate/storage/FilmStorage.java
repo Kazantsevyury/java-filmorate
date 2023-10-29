@@ -15,8 +15,6 @@ public interface FilmStorage {
 
     Film getById(int id);
 
-    void deleteById(int id);
-
     List<Film> getAllFilms();
 
     Map<Integer, Film> getMapFilms();

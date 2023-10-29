@@ -35,10 +35,6 @@ public class FilmService {
         return filmStorage.getById(id);
     }
 
-    public void deleteFilmById(int id) {
-        filmStorage.deleteById(id);
-    }
-
     public List<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }

@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-
 @Data
 @Component
 public class FilmValidator {
@@ -24,7 +23,7 @@ public class FilmValidator {
         return film.getDuration() >= 0;
     }
 
-    public void validatorParameter(int id, int filmId) {
+    public void validatorParameter(Integer id, Integer filmId) {
         if (id < 0) {
             throw new IncorrectParameterException("userId");
         }

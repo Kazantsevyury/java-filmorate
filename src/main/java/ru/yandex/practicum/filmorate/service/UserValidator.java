@@ -27,7 +27,7 @@ public class UserValidator {
         return !user.getBirthday().isAfter(LocalDate.now());
     }
 
-    public void validateParameter(int userId, int friendId) {
+    public void validateParameter(Integer userId, Integer friendId) {
         if (userId < 0) {
             throw new IncorrectParameterException("userId");
         }

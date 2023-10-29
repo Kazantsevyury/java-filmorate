@@ -12,10 +12,10 @@ import java.util.*;
 @Component
 @AllArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Integer, User> users = new HashMap<>();
-    private final UserValidator userValidator;
-    private final IdGenerator idGenerator;
 
+    private final IdGenerator idGenerator;
+    private final UserValidator userValidator;
+    private final Map<Integer, User> users = new HashMap<>();
 
     @Override
     public User save(User user) {
@@ -27,7 +27,7 @@ public class InMemoryUserStorage implements UserStorage {
             user.setId(id);
             users.put(id, user);
         } else {
-            throw new ValidationException("User did not pass validation.");
+            throw new ValidationException("Пользователь не прошёл валидацию");
         }
         return user;
     }
@@ -45,6 +45,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
+    }
+
+    @Override
     public User getUserById(int id) {
         if (users.containsKey(id)) {
             return users.get(id);
@@ -53,21 +58,8 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-
-    @Override
-    public void deleteById(int id) {
-        users.remove(id);
-    }
-
-
-    @Override
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users.values());
-    }
-
     @Override
     public Map<Integer, User> getMapUsers() {
         return users;
     }
-
 }
