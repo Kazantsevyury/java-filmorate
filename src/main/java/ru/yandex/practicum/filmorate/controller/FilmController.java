@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.FilmValidator;
 
-import java.util.Collection;
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -21,41 +22,51 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
-
-    @ApiOperation("Getting a list of all movies.")
-    @GetMapping
-    public Collection<Film> getAllFilms() {
-        log.info("Created GET request. getAllFilms");
-        return filmService.getAllFilms();
-    }
+    private final FilmValidator filmValidator;
 
     @ApiOperation("Saving a new movie to memory.")
     @PostMapping
-    public Film saveFilm(@RequestBody Film film) {
+    public Film saveFilm(@Valid @RequestBody Film film) {
         log.info("Created POST request. saveFilm");
         return filmService.saveFilm(film);
     }
 
     @ApiOperation("Updating a saved movie.")
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Created PUT request. updateFilm");
         return filmService.update(film);
+    }
+
+    @ApiOperation("Getting a list of all movies.")
+    @GetMapping
+    public List<Film> getAllFilms() {
+        log.info("Created GET request. getAllFilms");
+        return filmService.getAllFilms();
+    }
+
+    @ApiOperation("Getting a movie by id.")
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable int id) {
+        log.info("Created GET request. getFilmById");
+        return filmService.getFilmById(id);
     }
 
     @ApiOperation("Adding a like from user X to movie Y.")
     @PutMapping("/{id}/like/{userId}")
     public String addLikeToFilm(@PathVariable int id, @PathVariable int userId) {
         log.info("Created PUT request. likeFilm");
+        filmValidator.validatorParameter(id, userId);
         return filmService.addLikeToFilm(id, userId);
 
     }
 
     @ApiOperation("Removing a like from user X to movie Y.")
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLikeFromFilm(@PathVariable int id, @PathVariable int userId) {
+    public String removeLikeFromFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Created DELETE request. deleteLikeFilm");
-        filmService.removeLikeFromFilm(id, userId);
+        filmValidator.validatorParameter(id, userId);
+        return filmService.removeLikeFromFilm(id, userId);
     }
 
     @ApiOperation("Getting a list with TOP movies. ")
@@ -64,16 +75,9 @@ public class FilmController {
         if (count < 0) {
             throw new IncorrectValueException(count);
         }
-        log.info(String.format("Запрос на %s лучших фильмов.", count));
-        log.info(String.format("Вернулось %s фильмов", filmService.getTenPopularFilms(count).size()));
+        log.info(String.format("Request for %s top movies.", count));
+        log.info(String.format("%s movies returned", filmService.getTenPopularFilms(count).size()));
         return filmService.getTenPopularFilms(count);
-    }
-
-    @ApiOperation("Getting a movie by id.")
-    @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable int id) {
-        log.info("Created GET request. getFilmById");
-        return filmService.getFilmById(id);
     }
 
 }
