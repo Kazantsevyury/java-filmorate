@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.UserValidator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
