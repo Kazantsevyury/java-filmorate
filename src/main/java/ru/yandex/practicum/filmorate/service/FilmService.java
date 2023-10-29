@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.LocalDate;
-import java.time.Month;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,46 +18,34 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class FilmService {
+    private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    private final LocalDate birthOfCinema = LocalDate.of(1895, Month.DECEMBER, 28);
-
-    public Film saveFilm(Film film) {
-        return filmStorage.save(film);
-    }
-
-    public Film update(Film film) {
-        return filmStorage.update(film);
-    }
-
-    public Film getFilmById(int id) {
-        return filmStorage.getById(id);
-    }
-
-    public List<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
-    }
-
-    public String addLikeToFilm(int id, int userId) {
+    public String addLike(Integer id, Integer userId) {
         findId(id, userId);
         filmStorage.getMapFilms().get(id).getLikes().add(userId);
-        return String.format("The user with id: %s liked the movie with id: %s.", userId, id);
+        log.info(String.format("User with id: %s liked the film with id: %s", userId, id));
+        return String.format("User with id: %s liked the film with id: %s", userId, id);
     }
 
-    public List<Film> getTenPopularFilms(int count) {
-        return filmStorage.getAllFilms().stream().sorted((f0, f1) -> compare(f0.getLikes().size(),
-                f1.getLikes().size())).limit(count).collect(Collectors.toList());
-    }
-
-    public String removeLikeFromFilm(int id, int userId) {
+    public String removeLike(Integer id, Integer userId) {
         findId(id, userId);
         filmStorage.getMapFilms().get(id).getLikes().remove(userId);
-        return String.format("The user with id: %s removed the like from the movie with id: %s.", userId, id);
+        log.info(String.format("User with id: %s removed the like from the film with id: %s", userId, id));
+        return String.format("User with id: %s removed the like from the film with id: %s", userId, id);
     }
 
-    private void findId(int id, int userId) {
+    public List<Film> getTenPopularFilms(Integer count) {
+        log.info("Retrieving the ten most popular films.");
+        return filmStorage.getAllFilms().stream()
+                .sorted((f0, f1) -> Integer.compare(f1.getLikes().size(), f0.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    private void findId(Integer id, Integer userId) {
         if (!filmStorage.getMapFilms().containsKey(id)) {
             throw new IncorrectValueException(id);
         }

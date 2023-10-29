@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -17,15 +18,19 @@ import java.util.Set;
 @NotNull
 @ApiModel(description = "User")
 public class User {
-    private int id;
-
-    @Email
-    private String email;
 
     @NotBlank
     private final String login;
 
     private String name;
+
+    private int id;
+
+    @ApiModelProperty(value = "E-mail", example = "tea985@yandex.ru")
+    @Email
+    private String email;
+
+    @ApiModelProperty(value = "Date", example = "1978-07-19")
     private final LocalDate birthday;
 
     @JsonIgnore

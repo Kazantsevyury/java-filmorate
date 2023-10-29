@@ -13,7 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
 
-    private final IdGenerator idGenerator;
+    private final GeneratorId generatorId;
     private final UserValidator userValidator;
     private final Map<Integer, User> users = new HashMap<>();
 
@@ -23,11 +23,11 @@ public class InMemoryUserStorage implements UserStorage {
             if (Objects.isNull(user.getName()) || user.getName().isEmpty()) {
                 user.setName(user.getLogin());
             }
-            int id = idGenerator.getNextFreeId();
+            int id = generatorId.getNextFreeId();
             user.setId(id);
             users.put(id, user);
         } else {
-            throw new ValidationException("Пользователь не прошёл валидацию");
+            throw new ValidationException("The user did not pass validation");
         }
         return user;
     }

@@ -14,14 +14,14 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
-    private final IdGenerator idGenerator = new IdGenerator();
+    private final GeneratorId generatorId = new GeneratorId();
     private final FilmValidator filmValidator;
     private final Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public Film save(Film film) {
         if (filmValidator.validatorFilm(film)) {
-            int id = idGenerator.getNextFreeId();
+            int id = generatorId.getNextFreeId();
             log.info(film.toString());
             film.setId(id);
             films.put(id, film);

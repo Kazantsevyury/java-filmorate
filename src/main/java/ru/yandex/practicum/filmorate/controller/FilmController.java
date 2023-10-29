@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FilmValidator;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,34 +23,35 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
+    private final FilmStorage filmStorage;
     private final FilmValidator filmValidator;
 
     @ApiOperation("Saving a new movie to memory.")
     @PostMapping
     public Film saveFilm(@Valid @RequestBody Film film) {
         log.info("Created POST request. saveFilm");
-        return filmService.saveFilm(film);
+        return filmStorage.save(film);
     }
 
     @ApiOperation("Updating a saved movie.")
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Created PUT request. updateFilm");
-        return filmService.update(film);
+        return filmStorage.update(film);
     }
 
     @ApiOperation("Getting a list of all movies.")
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Created GET request. getAllFilms");
-        return filmService.getAllFilms();
+        return filmStorage.getAllFilms();
     }
 
     @ApiOperation("Getting a movie by id.")
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
         log.info("Created GET request. getFilmById");
-        return filmService.getFilmById(id);
+        return filmStorage.getById(id);
     }
 
     @ApiOperation("Adding a like from user X to movie Y.")
@@ -57,7 +59,7 @@ public class FilmController {
     public String addLikeToFilm(@PathVariable int id, @PathVariable int userId) {
         log.info("Created PUT request. likeFilm");
         filmValidator.validatorParameter(id, userId);
-        return filmService.addLikeToFilm(id, userId);
+        return filmService.addLike(id, userId);
 
     }
 
@@ -66,7 +68,7 @@ public class FilmController {
     public String removeLikeFromFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Created DELETE request. deleteLikeFilm");
         filmValidator.validatorParameter(id, userId);
-        return filmService.removeLikeFromFilm(id, userId);
+        return filmService.removeLike(id, userId);
     }
 
     @ApiOperation("Getting a list with TOP movies. ")
