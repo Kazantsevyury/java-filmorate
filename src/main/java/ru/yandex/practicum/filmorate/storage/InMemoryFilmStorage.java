@@ -68,7 +68,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilmById(int id){
+    public void deleteFilmById(int id) {
         if (films.containsKey(id)) {
              films.remove(id);
         } else {
@@ -77,7 +77,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteAllFilms(){
+    public void deleteAllFilms() {
         films.clear();
     }
 
