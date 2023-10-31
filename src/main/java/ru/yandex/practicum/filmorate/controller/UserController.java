@@ -11,79 +11,85 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.UserValidator;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
 @RequiredArgsConstructor
-@Api(tags = "UserController")
+@Slf4j
+@Api(tags = "UserController", description = "Operations related to users")
 public class UserController {
 
     private final UserStorage userStorage;
     private final UserService userService;
     private final UserValidator userValidator;
 
-    @ApiOperation("Saving a new user to memory.")
-    @PostMapping
-    public User saveUser(@RequestBody User user) {
-        log.info("Created POST request. saveUser");
-        return userStorage.save(user);
+    @ApiOperation("Creating a new user")
+    @PostMapping()
+    public User create(@Valid @RequestBody User user) {
+        log.info("Creating a new user");
+        return userStorage.createUser(user);
     }
 
-    @ApiOperation("Getting a user by Id.")
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id) {
-        log.info("Created GET request. getUserById");
-        return userStorage.getUserById(id);
-    }
-
-    @ApiOperation("Updating a user.")
-    @PutMapping
-    public User updateUser(@RequestBody User user) {
-        log.info("Created PUT request. updateUser");
+    @ApiOperation("Updating a user")
+    @PutMapping()
+    public User update(@Valid @RequestBody User user) {
+        log.info("Updating a user");
         return userStorage.updateUser(user);
     }
 
-    @ApiOperation("Adding a new friend X to user Y.")
+    @ApiOperation("Adding a friend")
     @PutMapping("/{userId}/friends/{friendId}")
-    public String addFriend(@PathVariable int userId, @PathVariable int friendId) {
-        log.info("Created PUT request. addFriend");
+    public String addFriend(
+            @PathVariable Integer userId,
+            @PathVariable Integer friendId
+    ) {
+        log.info("Adding a friend. User ID: " + userId + ", Friend ID: " + friendId);
         userValidator.validateParameter(userId, friendId);
         return userService.addFriend(userId, friendId);
     }
 
-    @ApiOperation("Removing a new friend X to user Y.")
+    @ApiOperation("Removing a friend")
     @DeleteMapping("/{userId}/friends/{friendId}")
-    public String deleteFriends(@PathVariable int userId, @PathVariable int friendId) {
-        log.info("Created Delete request. deleteFriends");
+    public String remove(
+            @PathVariable Integer userId,
+            @PathVariable Integer friendId
+    ) {
+        log.info("Removing a friend. User ID: " + userId + ", Friend ID: " + friendId);
         userValidator.validateParameter(userId, friendId);
         return userService.removeFriend(userId, friendId);
     }
 
-    @ApiOperation("Getting a list with all friends from user Y.")
-    @GetMapping("/{id}/friends")
-    public List<User> getFriendsSet(@PathVariable int id) {
-        log.info("Created Get request. getFriendsSet");
-        if (id < 0) {
-            throw new IncorrectParameterException("userId");
-        }
-        return userService.listFriendsUser(id);
+    @ApiOperation("Getting all users")
+    @GetMapping()
+    public List<User> getUsers() {
+        log.info("Fetching all users");
+        return userStorage.retrieveAllUsers();
     }
 
-    @ApiOperation("Getting a list of friends shared with another user.")
+    @ApiOperation("Getting a user by ID")
+    @GetMapping("/{userId}")
+    public User findUserById(@PathVariable Integer userId) {
+        log.info("Fetching user by ID: " + userId);
+        return userStorage.retrieveUserById(userId);
+    }
+
+    @ApiOperation("Getting a list of mutual friends")
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getListOfFriendsSharedWithAnotherUser(@PathVariable int id, @PathVariable int otherId) {
-        log.info("Created Get request. getListOfFriendsSharedWithAnotherUser");
+    public List<User> listOfMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.info("Fetching the list of mutual friends for User ID: " + id + " and Other User ID: " + otherId);
         userValidator.validateParameter(id, otherId);
         return userService.listOfMutualFriends(id, otherId);
     }
 
-    @ApiOperation("Getting a list of all users.")
-    @GetMapping()
-    public List<User> getAllUsers() {
-        log.info("Created GET request. getAllUsers");
-        return userStorage.getAllUsers();
+    @ApiOperation("Getting a list of users who are friends")
+    @GetMapping("/{id}/friends")
+    public List<User> listAllFriendUsers(@PathVariable Integer id) {
+        if (id < 0) {
+            throw new IncorrectParameterException("userId");
+        }
+        log.info("Fetching all friends of User ID: " + id);
+        return userService.listFriendsUser(id);
     }
-
 }

@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserValidator;
 
 import java.util.*;
-
 @Component
 @AllArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
@@ -18,7 +17,7 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public User save(User user) {
+    public User createUser(User user) {
         if (userValidator.validateUser(user)) {
             if (Objects.isNull(user.getName()) || user.getName().isEmpty()) {
                 user.setName(user.getLogin());
@@ -27,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
             user.setId(id);
             users.put(id, user);
         } else {
-            throw new ValidationException("The user did not pass validation");
+            throw new ValidationException("User did not pass validation");
         }
         return user;
     }
@@ -45,12 +44,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users.values());
+    public List<User> retrieveAllUsers() {
+        List<User> usersList = new ArrayList<>(users.values());
+        return usersList;
     }
 
     @Override
-    public User getUserById(int id) {
+    public User retrieveUserById(int id) {
         if (users.containsKey(id)) {
             return users.get(id);
         } else {
@@ -59,7 +59,16 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Map<Integer, User> getMapUsers() {
+    public Map<Integer, User> retrieveUserMap() {
         return users;
+    }
+
+    @Override
+    public void deleteUserById(int id){
+        if (users.containsKey(id)) {
+            users.remove(id);
+        } else {
+            throw new IncorrectValueException(id);
+        }
     }
 }

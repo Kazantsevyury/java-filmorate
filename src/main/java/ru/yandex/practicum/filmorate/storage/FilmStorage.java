@@ -9,13 +9,18 @@ import java.util.Map;
 
 public interface FilmStorage {
 
-    Film save(@Valid @RequestBody Film film);
+    Film createFilm(@Valid @RequestBody Film film);
 
-    Film update(@Valid @RequestBody Film film);
+    Film retrieveFilmById(int id);
 
-    Film getById(int id);
+    Film updateFilm(@Valid @RequestBody Film film);
 
-    List<Film> getAllFilms();
+    List<Film> retrieveAllFilms();
 
-    Map<Integer, Film> getMapFilms();
+    Map<Integer, Film> retrieveFilmMap();
+
+    void deleteFilmById(int id);
+
+    void deleteAllFilms();
+
 }

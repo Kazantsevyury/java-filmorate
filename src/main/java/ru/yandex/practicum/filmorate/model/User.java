@@ -30,7 +30,7 @@ public class User {
     @Email
     private String email;
 
-    @ApiModelProperty(value = "Date", example = "1978-07-19")
+    @ApiModelProperty(value = "Date in format:", example = "1978-07-19")
     private final LocalDate birthday;
 
     @JsonIgnore

@@ -7,13 +7,16 @@ import java.util.Map;
 
 public interface UserStorage {
 
-    User save(User user);
+    User createUser(User user);
 
-    User getUserById(int id);
+    User retrieveUserById(int id);
 
     User updateUser(User user);
 
-    List<User> getAllUsers();
+    List<User> retrieveAllUsers();
 
-    Map<Integer, User> getMapUsers();
+    Map<Integer, User> retrieveUserMap();
+
+    void deleteUserById(int id);
+
 }

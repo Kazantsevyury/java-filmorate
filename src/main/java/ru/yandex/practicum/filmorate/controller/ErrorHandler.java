@@ -14,14 +14,14 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleIncorrectParameterException(final IncorrectParameterException e) {
         return new ErrorResponse(
-                String.format("Ошибка с полем \"%s\".", e.getParameter())
+                String.format("Error with the field \"%s\".", e.getParameter())
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerIncorrectValueException(final IncorrectValueException e) {
-        return new ErrorResponse(String.format("Ошибка со значением: %s.", e.getValue())
+        return new ErrorResponse(String.format("Error with the value: %s.", e.getValue())
         );
     }
 
@@ -61,7 +61,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         return new ErrorResponse(
-                "Произошла непредвиденная ошибка."
+                "An unexpected error occurred."
         );
     }
 }

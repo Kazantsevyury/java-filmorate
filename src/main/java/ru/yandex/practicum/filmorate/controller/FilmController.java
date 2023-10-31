@@ -14,72 +14,75 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import javax.validation.Valid;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/films")
 @AllArgsConstructor
 @Slf4j
-@Api(tags = "FilmController")
+@Api(tags = "FilmController", description = "Operations related to films")
 public class FilmController {
-
-    private final FilmService filmService;
     private final FilmStorage filmStorage;
+    private final FilmService filmService;
     private final FilmValidator filmValidator;
 
-    @ApiOperation("Saving a new movie to memory.")
-    @PostMapping
-    public Film saveFilm(@Valid @RequestBody Film film) {
-        log.info("Created POST request. saveFilm");
-        return filmStorage.save(film);
+    @ApiOperation("Adding a film")
+    @PostMapping()
+    public Film create(@Valid @RequestBody Film film) {
+        log.info("Adding a film");
+        return filmStorage.createFilm(film);
     }
 
-    @ApiOperation("Updating a saved movie.")
-    @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
-        log.info("Created PUT request. updateFilm");
-        return filmStorage.update(film);
+    @ApiOperation("Updating a film")
+    @PutMapping()
+    public Film update(@Valid @RequestBody Film film) {
+        log.info("Updating a film");
+        return filmStorage.updateFilm(film);
     }
 
-    @ApiOperation("Getting a list of all movies.")
-    @GetMapping
-    public List<Film> getAllFilms() {
-        log.info("Created GET request. getAllFilms");
-        return filmStorage.getAllFilms();
+    @ApiOperation("Getting all films")
+    @GetMapping()
+    public List<Film> getFilms() {
+        log.info("Fetching all films");
+        return filmStorage.retrieveAllFilms();
     }
 
-    @ApiOperation("Getting a movie by id.")
+    @ApiOperation("Getting a film by ID")
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable int id) {
-        log.info("Created GET request. getFilmById");
-        return filmStorage.getById(id);
+    public Film getFilm(@PathVariable Integer id) {
+        log.info("Fetching film by ID: " + id);
+        return filmStorage.retrieveFilmById(id);
     }
 
-    @ApiOperation("Adding a like from user X to movie Y.")
-    @PutMapping("/{id}/like/{userId}")
-    public String addLikeToFilm(@PathVariable int id, @PathVariable int userId) {
-        log.info("Created PUT request. likeFilm");
+    @ApiOperation("Adding a like to a film")
+    @PutMapping("{id}/like/{userId}")
+    public String addLikeToFilm(
+            @PathVariable Integer id,
+            @PathVariable Integer userId
+    ) {
+        log.info("Adding a like to film with ID: " + id + " by User ID: " + userId);
         filmValidator.validatorParameter(id, userId);
         return filmService.addLike(id, userId);
-
     }
 
-    @ApiOperation("Removing a like from user X to movie Y.")
+    @ApiOperation("Removing a like from a film")
     @DeleteMapping("/{id}/like/{userId}")
-    public String removeLikeFromFilm(@PathVariable Integer id, @PathVariable Integer userId) {
-        log.info("Created DELETE request. deleteLikeFilm");
+    public String removeLikeToFilm(
+            @PathVariable Integer id,
+            @PathVariable Integer userId
+    ) {
+        log.info("Removing a like from film with ID: " + id + " by User ID: " + userId);
         filmValidator.validatorParameter(id, userId);
         return filmService.removeLike(id, userId);
     }
 
-    @ApiOperation("Getting a list with TOP movies. ")
+    @ApiOperation("Getting 10 popular films")
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) int count) {
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
         if (count < 0) {
             throw new IncorrectValueException(count);
         }
-        log.info(String.format("Request for %s top movies.", count));
-        log.info(String.format("%s movies returned", filmService.getTenPopularFilms(count).size()));
-        return filmService.getTenPopularFilms(count);
+        log.info("Request for " + count + " top films.");
+        List<Film> popularFilms = filmService.getTenPopularFilms(count);
+        log.info("Returned " + popularFilms.size() + " films");
+        return popularFilms;
     }
-
 }

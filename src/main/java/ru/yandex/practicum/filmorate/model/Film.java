@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 public class Film {
     private int id;
     @NotBlank
+    @NotNull
     private final String name;
     @NotBlank
     private final String description;
