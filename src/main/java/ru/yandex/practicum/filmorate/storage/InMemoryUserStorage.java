@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserValidator;
 
 import java.util.*;
+
 @Component
 @AllArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
@@ -64,7 +65,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUserById(int id){
+    public void deleteUserById(int id) {
         if (users.containsKey(id)) {
             users.remove(id);
         } else {
