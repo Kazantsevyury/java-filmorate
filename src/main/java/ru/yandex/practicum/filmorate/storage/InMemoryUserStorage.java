@@ -75,7 +75,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void checkUserExistence(int id){
+    public void checkUserExistence(int id) {
         if (!users.containsKey(id)) {
             throw new UserNotFoundException(String.format("User with id %s does not exist.", id));
         }
