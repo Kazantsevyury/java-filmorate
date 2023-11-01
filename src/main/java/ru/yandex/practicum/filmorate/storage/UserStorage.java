@@ -20,5 +20,4 @@ public interface UserStorage {
     void deleteUserById(int id);
 
     void checkUserExistence(int id);
-
 }
