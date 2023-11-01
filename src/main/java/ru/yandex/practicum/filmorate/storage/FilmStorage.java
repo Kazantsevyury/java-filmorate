@@ -22,5 +22,5 @@ public interface FilmStorage {
     void deleteFilmById(int id);
 
     void deleteAllFilms();
-
+    void checkFilmExistence(int id);
 }

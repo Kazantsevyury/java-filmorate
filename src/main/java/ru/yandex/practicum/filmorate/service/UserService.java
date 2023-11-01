@@ -17,26 +17,50 @@ public class UserService {
     private final UserStorage userStorage;
 
     public String addFriend(int userId, int friendId) {
-        findId(userId, friendId);
-        userStorage.retrieveUserMap().get(userId).getIdFriends().add(friendId);
-        userStorage.retrieveUserMap().get(friendId).getIdFriends().add(userId);
+        userStorage.checkUserExistence(userId);
+        userStorage.checkUserExistence(friendId);
+
+        User user = userStorage.retrieveUserById(userId);
+        User friend = userStorage.retrieveUserById(friendId);
+
+        user.getIdFriends().add(friendId);
+        friend.getIdFriends().add(userId);
+
+        userStorage.updateUser(user);
+        userStorage.updateUser(friend);
+
         log.info(String.format("Added friend with id: %s to the user with id: %s as a friend.", friendId, userId));
         return String.format("User with id %s has been added as a friend to the user with id %s!", friendId, userId);
     }
 
     public String removeFriend(int userId, int friendId) {
-        findId(userId, friendId);
-        userStorage.retrieveUserMap().get(userId).getIdFriends().remove(friendId);
+        userStorage.checkUserExistence(userId);
+        userStorage.checkUserExistence(friendId);
+
+        User user = userStorage.retrieveUserById(userId);
+        User friend = userStorage.retrieveUserById(friendId);
+
+        user.getIdFriends().remove(friendId);
+        friend.getIdFriends().remove(userId);
+
+        userStorage.updateUser(user);
+        userStorage.updateUser(friend);
+
         log.info(String.format("User with id %s removed from friends of user with id %s!", friendId, userId));
         return String.format("User with id %s removed from friends of user with id %s!", friendId, userId);
     }
 
     public List<User> listOfMutualFriends(int userId, int friendId) {
-        findId(userId, friendId);
+        userStorage.checkUserExistence(userId);
+        userStorage.checkUserExistence(friendId);
+
+        User user = userStorage.retrieveUserById(userId);
+        User friend = userStorage.retrieveUserById(friendId);
+
         List<User> listMutualFriends = new ArrayList<>();
 
-        for (Integer id : userStorage.retrieveUserById(userId).getIdFriends()) {
-            if (userStorage.retrieveUserById(friendId).getIdFriends().contains(id)) {
+        for (Integer id : user.getIdFriends()) {
+            if (friend.getIdFriends().contains(id)) {
                 listMutualFriends.add(userStorage.retrieveUserById(id));
             }
         }
@@ -45,24 +69,15 @@ public class UserService {
     }
 
     public List<User> listFriendsUser(int userId) {
+        userStorage.checkUserExistence(userId);
+
+        User user = userStorage.retrieveUserById(userId);
         List<User> allFriends = new ArrayList<>();
-        if (!userStorage.retrieveUserMap().containsKey(userId)) {
-            throw new UserNotFoundException(String.format("User with id %s does not exist.", userId));
-        }
-        List<Integer> usersId = new ArrayList<>(userStorage.retrieveUserById(userId).getIdFriends());
-        for (Integer id : usersId) {
+
+        for (Integer id : user.getIdFriends()) {
             allFriends.add(userStorage.retrieveUserById(id));
         }
         log.info("Number of friends: " + allFriends.size());
         return allFriends;
-    }
-
-    private void findId(int userId, int friendId) {
-        if (!userStorage.retrieveUserMap().containsKey(userId)) {
-            throw new UserNotFoundException(String.format("User with id %s does not exist.", userId));
-        }
-        if (!userStorage.retrieveUserMap().containsKey(friendId)) {
-            throw new UserNotFoundException(String.format("Friend with id %s does not exist.", friendId));
-        }
     }
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserValidator;
@@ -70,6 +71,13 @@ public class InMemoryUserStorage implements UserStorage {
             users.remove(id);
         } else {
             throw new IncorrectValueException(id);
+        }
+    }
+
+    @Override
+    public void checkUserExistence(int id){
+        if (!users.containsKey(id)) {
+            throw new UserNotFoundException(String.format("User with id %s does not exist.", id));
         }
     }
 }
