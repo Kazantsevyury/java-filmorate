@@ -1,73 +1,88 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InvalidInputException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.FilmValidator;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping("/films")
+@AllArgsConstructor
+@Slf4j
+@Api(tags = "FilmController", description = "Operations related to films")
 public class FilmController {
+    private final FilmStorage filmStorage;
+    private final FilmService filmService;
+    private final FilmValidator filmValidator;
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    int idCounter = 1;
-    private final LocalDate birthOfCinema = LocalDate.of(1895, Month.DECEMBER, 28);
-    private Film film;
-
-    @GetMapping
-    public Collection<Film> getAllFilms() {
-        log.info("Created GET request");
-        return films.values();
+    @ApiOperation("Adding a film")
+    @PostMapping()
+    public Film create(@Valid @RequestBody Film film) {
+        log.info("Adding a film");
+        return filmStorage.createFilm(film);
     }
 
-    @PostMapping
-    public Film createFilm(@RequestBody Film film) {
-        log.info("Created POST request");
-        Integer id = film.getId();
-        if (films.containsKey(id)) {
-            throw new ObjectAlreadyExistException("A film with this ID already exists");
-        }
-        if (!film.getName().isBlank() && (film.getDescription().length() <= 200) &&
-                (film.getReleaseDate().isAfter(birthOfCinema)) && (film.getDuration() > 0)) {
-            if (id == null) {
-                film.setId(getNextId());
-            }
-
-            films.put(film.getId(), film);
-
-        } else {
-            throw new InvalidInputException("Conditions for adding a film are not met");
-        }
-        return film;
+    @ApiOperation("Updating a film")
+    @PutMapping()
+    public Film update(@Valid @RequestBody Film film) {
+        log.info("Updating a film");
+        return filmStorage.updateFilm(film);
     }
 
-    @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        log.info("Created PUT request");
-        if (!films.containsKey(film.getId())) {
-            throw new ObjectAlreadyExistException("A film with this ID is not present");
-        }
-        if (!film.getName().isBlank() && (film.getDescription().length() <= 200) &&
-                (film.getReleaseDate().isAfter(birthOfCinema)) && (film.getDuration() > 0)) {
-            if (films.containsKey(film.getId())) {
-                films.remove(film.getId());
-            }
-            films.put(film.getId(), film);
-        } else {
-            throw new InvalidInputException("Conditions for adding a film are not met");
-        }
-        return film;
+    @ApiOperation("Getting all films")
+    @GetMapping()
+    public List<Film> getFilms() {
+        log.info("Fetching all films");
+        return filmStorage.retrieveAllFilms();
     }
 
-    public int getNextId() {
-        return idCounter++;
+    @ApiOperation("Getting a film by ID")
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable Integer id) {
+        log.info("Fetching film by ID: " + id);
+        return filmStorage.retrieveFilmById(id);
+    }
+
+    @ApiOperation("Adding a like to a film")
+    @PutMapping("{id}/like/{userId}")
+    public String addLikeToFilm(
+            @PathVariable Integer id,
+            @PathVariable Integer userId
+    ) {
+        log.info("Adding a like to film with ID: " + id + " by User ID: " + userId);
+        filmValidator.validatorParameter(id, userId);
+        return filmService.addLike(id, userId);
+    }
+
+    @ApiOperation("Removing a like from a film")
+    @DeleteMapping("/{id}/like/{userId}")
+    public String removeLikeToFilm(
+            @PathVariable Integer id,
+            @PathVariable Integer userId
+    ) {
+        log.info("Removing a like from film with ID: " + id + " by User ID: " + userId);
+        filmValidator.validatorParameter(id, userId);
+        return filmService.removeLike(id, userId);
+    }
+
+    @ApiOperation("Getting 10 popular films")
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
+        if (count < 0) {
+            throw new IncorrectValueException(count);
+        }
+        log.info("Request for " + count + " top films.");
+        List<Film> popularFilms = filmService.getTenPopularFilms(count);
+        log.info("Returned " + popularFilms.size() + " films");
+        return popularFilms;
     }
 }
