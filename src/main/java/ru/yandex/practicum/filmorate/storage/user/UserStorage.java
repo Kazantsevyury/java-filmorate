@@ -22,5 +22,6 @@ public interface UserStorage {
     String removeFriend(int userId, int friendId);
 
     Map<Integer, User> getMapUsers();
+
     void checkUserExistence(int id);
 }
