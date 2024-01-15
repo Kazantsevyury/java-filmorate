@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.UserValidator;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,13 +29,13 @@ public class UserController {
     @PostMapping()
     public User create(@Valid @RequestBody User user) {
         log.info("Creating a new user");
-        return userStorage.createUser(user);
+        log.info(user.toString());
+        return userStorage.createNewUser(user);
     }
 
     @ApiOperation("Updating a user")
     @PutMapping()
     public User update(@Valid @RequestBody User user) {
-        log.info("Updating a user");
         return userStorage.updateUser(user);
     }
 
@@ -45,7 +45,6 @@ public class UserController {
             @PathVariable Integer userId,
             @PathVariable Integer friendId
     ) {
-        log.info("Adding a friend. User ID: " + userId + ", Friend ID: " + friendId);
         userValidator.validateParameter(userId, friendId);
         return userService.addFriend(userId, friendId);
     }
@@ -56,40 +55,37 @@ public class UserController {
             @PathVariable Integer userId,
             @PathVariable Integer friendId
     ) {
-        log.info("Removing a friend. User ID: " + userId + ", Friend ID: " + friendId);
         userValidator.validateParameter(userId, friendId);
         return userService.removeFriend(userId, friendId);
     }
 
     @ApiOperation("Getting all users")
     @GetMapping()
-    public List<User> getUsers() {
-        log.info("Fetching all users");
-        return userStorage.retrieveAllUsers();
+    public List<User> getUser() {
+        return userStorage.getUsers();
     }
 
-    @ApiOperation("Getting a user by ID")
+    @ApiOperation("Getting user by ID")
     @GetMapping("/{userId}")
     public User findUserById(@PathVariable Integer userId) {
-        log.info("Fetching user by ID: " + userId);
-        return userStorage.retrieveUserById(userId);
+        return userStorage.findUserById(userId);
     }
 
-    @ApiOperation("Getting a list of mutual friends")
+    @ApiOperation("Getting a list of mutual friends.")
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> listOfMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        log.info("Fetching the list of mutual friends for User ID: " + id + " and Other User ID: " + otherId);
+    public List<User> listOfMutualFriends(@PathVariable Integer id,
+                                          @PathVariable Integer otherId
+    ) {
         userValidator.validateParameter(id, otherId);
         return userService.listOfMutualFriends(id, otherId);
     }
 
-    @ApiOperation("Getting a list of users who are friends")
+    @ApiOperation("Getting a list of users who are friends with the user")
     @GetMapping("/{id}/friends")
-    public List<User> listAllFriendUsers(@PathVariable Integer id) {
+    public List<User> listAllFriendUser(@PathVariable Integer id) {
         if (id < 0) {
             throw new IncorrectParameterException("userId");
         }
-        log.info("Fetching all friends of User ID: " + id);
         return userService.listFriendsUser(id);
     }
 }

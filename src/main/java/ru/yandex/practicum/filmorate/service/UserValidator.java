@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 
 @Component
 public class UserValidator {
+    private static final Pattern myRegex = Pattern.compile("\\s");
 
     public boolean validateUser(User user) {
 
         if (!Objects.isNull(user.getLogin())) {
-            Pattern pattern = Pattern.compile("\\s");
-            Matcher matcher = pattern.matcher(user.getLogin());
+            Matcher matcher = myRegex.matcher(user.getLogin());
             boolean found = matcher.find();
             if (found) {
                 return false;
@@ -35,4 +35,6 @@ public class UserValidator {
             throw new IncorrectParameterException("friendId");
         }
     }
+
+
 }
