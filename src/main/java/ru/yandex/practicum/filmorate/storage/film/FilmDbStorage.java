@@ -31,7 +31,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film create(Film film) {
         log.info(film.toString());
         SimpleJdbcInsert simpleJdbcInsert;
-        if (filmValidator.validatorFilm(film)) {
+        if (filmValidator.validateFilm(film)) {
             log.info(film.toString());
             simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName("film")
@@ -52,7 +52,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         log.info(film.toString());
-        if (filmValidator.validatorFilm(film)) {
+        if (filmValidator.validateFilm(film)) {
             getFilm(film.getId());
             jdbcTemplate.update(
                     "update film set name = ?, description = ?, release_date = ?, duration = ?, rate = ?, mpa = ?" +
@@ -109,7 +109,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Mpa getMpa(int id) {
-        filmValidator.validatorMpaId(id);
+        filmValidator.validateMpaId(id);
         return jdbcTemplate.queryForObject("SELECT* FROM rating WHERE rating_id = ?", (rs, rowNum) -> {
             Mpa mpa = new Mpa();
             mpa.setId(rs.getInt("rating_id"));
@@ -130,7 +130,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Genre getGenre(int id) {
-        filmValidator.validatorGenreId(id);
+        filmValidator.validateGenreId(id);
         return jdbcTemplate.queryForObject("SELECT* FROM genre WHERE genre_id = ?", (rs, rowNum) -> {
             Genre genre = new Genre();
             genre.setId(rs.getInt("genre_id"));

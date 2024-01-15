@@ -61,7 +61,7 @@ public class FilmService {
     }
 
     private Film findFilmById(Integer id) {
-        filmValidator.validatorParameter(id);
+        filmValidator.validateParameter(id);
         Film film = filmStorage.getFilm(id);
         return film;
     }
