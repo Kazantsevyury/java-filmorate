@@ -25,5 +25,6 @@ public interface FilmStorage {
     List<Genre> getAllGenres();
 
     Genre getGenre(int id);
+
     void checkFilmExistence(int id);
 }
