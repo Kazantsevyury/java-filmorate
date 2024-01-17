@@ -35,7 +35,7 @@ public class FilmController {
     @ApiOperation("Update a film")
     @PutMapping("/films")
     public Film updateFilm(@Valid @RequestBody Film film) {
-        log.info("Updating film: ", film.toString() );
+        log.info("Updating film: ", film.toString());
         return filmStorage.update(film);
     }
 
