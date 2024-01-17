@@ -28,8 +28,7 @@ public class UserController {
     @ApiOperation("Creating a new user")
     @PostMapping()
     public User create(@Valid @RequestBody User user) {
-        log.info("Creating a new user");
-        log.info(user.toString());
+        log.info("Creating a new user:", user.toString());
         return userStorage.createNewUser(user);
     }
 

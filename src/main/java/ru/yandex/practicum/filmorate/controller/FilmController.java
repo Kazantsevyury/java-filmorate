@@ -28,16 +28,14 @@ public class FilmController {
     @ApiOperation("Create a film")
     @PostMapping("/films")
     public Film createFilm(@Valid @RequestBody Film film) {
-        log.info("Creating a new film");
-        log.info(film.toString());
+        log.info("Creating a new film: ",film.toString());
         return filmStorage.create(film);
     }
 
     @ApiOperation("Update a film")
     @PutMapping("/films")
     public Film updateFilm(@Valid @RequestBody Film film) {
-        log.info("Updating film");
-        log.info(film.toString());
+        log.info("Updating film: ", film.toString() );
         return filmStorage.update(film);
     }
 
