@@ -14,7 +14,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleIncorrectParameterException(final IncorrectParameterException e) {
         return new ErrorResponse(
-                String.format("Error with the field \"%s\".", e.getParameter())
+                String.format("Error with the \"%s\" field.", e.getParameter())
         );
     }
 

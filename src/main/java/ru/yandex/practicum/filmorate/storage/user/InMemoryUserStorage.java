@@ -1,17 +1,20 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IncorrectValueException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.GeneratorId;
 import ru.yandex.practicum.filmorate.service.UserValidator;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 @Component
-@AllArgsConstructor
+@Builder
+@Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
     private final GeneratorId generatorId;
@@ -19,7 +22,7 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public User createUser(User user) {
+    public User createNewUser(User user) {
         if (userValidator.validateUser(user)) {
             if (Objects.isNull(user.getName()) || user.getName().isEmpty()) {
                 user.setName(user.getLogin());
@@ -27,6 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
             int id = generatorId.getNextFreeId();
             user.setId(id);
             users.put(id, user);
+            log.info("Created a new user with id: {}", id);
         } else {
             throw new ValidationException("User did not pass validation");
         }
@@ -38,6 +42,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (userValidator.validateUser(user)) {
             if (users.containsKey(user.getId())) {
                 users.put(user.getId(), user);
+                log.info("Updated user with id: {}", user.getId());
             } else {
                 throw new IncorrectValueException(user.getId());
             }
@@ -46,32 +51,42 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> retrieveAllUsers() {
-        List<User> usersList = new ArrayList<>(users.values());
-        return usersList;
+    public List<User> getUsers() {
+        log.info("Fetching all users");
+        return new ArrayList<>(users.values());
     }
 
     @Override
-    public User retrieveUserById(int id) {
+    public User findUserById(int id) {
         if (users.containsKey(id)) {
+            log.info("Found user with id: {}", id);
             return users.get(id);
         } else {
-            throw new IncorrectValueException(id);
+            throw new UserNotFoundException(String.format("User with id: %s does not exist.", id));
         }
     }
 
     @Override
-    public Map<Integer, User> retrieveUserMap() {
+    public String addFriend(int userId, int friendId) {
+        findUserById(userId).getIdFriends().add(friendId);
+        findUserById(friendId).getIdFriends().add(userId);
+        String message = String.format("User with id %s added as a friend to the user with id %s!", friendId, userId);
+        log.info(message);
+        return message;
+    }
+
+    @Override
+    public String removeFriend(int userId, int friendId) {
+        findUserById(userId).getIdFriends().remove(friendId);
+        String message = String.format("User with id %s removed from friends of the user with id %s!", friendId, userId);
+        log.info(message);
+        return message;
+    }
+
+    @Override
+    public Map<Integer, User> getMapUsers() {
+        log.info("Fetching all users as a map");
         return users;
-    }
-
-    @Override
-    public void deleteUserById(int id) {
-        if (users.containsKey(id)) {
-            users.remove(id);
-        } else {
-            throw new IncorrectValueException(id);
-        }
     }
 
     @Override
@@ -80,4 +95,5 @@ public class InMemoryUserStorage implements UserStorage {
             throw new UserNotFoundException(String.format("User with id %s does not exist.", id));
         }
     }
+
 }
